@@ -4,21 +4,24 @@ import * as THREE from 'three';
 export class Ship {
     static colliderSize = 0.15;
 
-    constructor(position, color=0x55deff) {
+    constructor(position, scene, color=0x55deff) {
         this.pos = position;
+        this.scene = scene;
+
         this.dir = new THREE.Vector2(0, 1);
         this.vel = new THREE.Vector2();
         this.acc = new THREE.Vector2();
         
-        this.accConst = 0.00001;
-        this.maxSpeed = 0.015;
-        this.friction = 0.005;
+        this.accConst = 0.0001;
+        this.maxSpeed = 0.05;
+        this.friction = 0.01;
         this.turnSpeed = 0;
         this.health = 100;
 
-        const geometry = new THREE.ConeGeometry( 0.1, 0.3, 5 );
+        const geometry = new THREE.ConeGeometry( 0.05, 0.15, 8 );
         const material = new THREE.MeshBasicMaterial( { color: color } );
         this.mesh = new THREE.Mesh( geometry, material );
+        this.scene.add(this.mesh);
     }
 
     getMesh() {
@@ -53,11 +56,11 @@ export class Ship {
     }
 
     turnLeft() {
-        this.turnSpeed = -0.01;
+        this.turnSpeed = -0.03;
     }
 
     turnRight() {
-        this.turnSpeed = 0.01;
+        this.turnSpeed = 0.03;
     }
 
     fire() {
@@ -85,7 +88,7 @@ export class Bullet {
         this.position = position;
         this.direction = direction;
         this.direction.normalize();
-        this.speed = 0.004;
+        this.speed = 0.02;
 
         // TODO: Change this to sprite
         // const map = new THREE.TextureLoader().load('../bullet.png');

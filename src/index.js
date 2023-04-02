@@ -10,10 +10,13 @@ const renderer = new THREE.WebGLRenderer();
 renderer.setSize( window.innerWidth, window.innerHeight );
 document.body.appendChild( renderer.domElement );
 
-const ship1 = new Ship(new THREE.Vector2(2, -2));
-const ship2 = new Ship(new THREE.Vector2(-2, 2), 0x00ff00);
-const sun = new Sun(ship1, ship2);
-scene.add( ship1.getMesh(), ship2.getMesh(), sun.getMesh() );
+const ambientLight = new THREE.AmbientLight(0xffffff, 1);
+ambientLight.intensity = 0.5;
+scene.add(ambientLight);
+
+const ship1 = new Ship(new THREE.Vector2(2, -2), scene, 0xfa5a5a);
+const ship2 = new Ship(new THREE.Vector2(-2, 2), scene, 0x940101);
+const sun = new Sun(ship1, ship2, scene);
 
 // pass the reference of the scene to the bullet class since we spawn and remove bullet sprites
 Bullet.scene = scene;
