@@ -1,11 +1,14 @@
 const keysDown = {};
 
-export function setupControls() {
+export function setupControls(ship1, ship2) {
 
     document.onkeydown = function(e) {
         switch (e.key) {
             case "w":
-                keysDown["w"] = true;
+                if(!keysDown["w"]) {
+                    ship1.fire();
+                    keysDown["w"] = true;
+                }
                 break;
             case "s":
                 keysDown["s"] = true;
@@ -18,7 +21,10 @@ export function setupControls() {
                 break;
 
             case "ArrowUp":
-                keysDown["ArrowUp"] = true;
+                if(!keysDown["ArrowUp"]) {
+                    ship2.fire()
+                    keysDown["ArrowUp"] = true;
+                }
                 break;
             case "ArrowDown":
                 keysDown["ArrowDown"] = true;
@@ -65,11 +71,8 @@ export function setupControls() {
 }
 
 export function updateControls(ship1, ship2) {
-    if (keysDown["w"]) {
-        ship1.accelerate();
-    }
     if (keysDown["s"]) {
-        ship1.deccelerate();
+        ship1.accelerate();
     }
     if (keysDown["d"]) {
         ship1.turnRight();
@@ -78,11 +81,8 @@ export function updateControls(ship1, ship2) {
         ship1.turnLeft();
     }
 
-    if (keysDown["ArrowUp"]) {
-        ship2.accelerate();
-    }
     if (keysDown["ArrowDown"]) {
-        ship2.deccelerate();
+        ship2.accelerate();
     }
     if (keysDown["ArrowRight"]) {
         ship2.turnRight();
