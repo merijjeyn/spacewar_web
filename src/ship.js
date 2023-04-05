@@ -2,7 +2,7 @@ import * as THREE from 'three';
 
 // A ship class that can be moved around the screen and fire bullets
 export class Ship {
-    static colliderSize = 0.15;
+    static colliderSize = 0.1;
 
     constructor(position, scene, color=0x55deff) {
         this.pos = position;
@@ -22,17 +22,43 @@ export class Ship {
         const material = new THREE.MeshBasicMaterial( { color: color } );
         this.mesh = new THREE.Mesh( geometry, material );
         this.scene.add(this.mesh);
+
+        this.burnerParticles = [];
+        this.frameCounter = 0;
     }
 
     getMesh() {
         return this.mesh;
     }
 
-    update() {
+    confineWalls(camera) {
+        if (camera == null) {
+            return;
+        }
+
+        let bound = new THREE.Vector3();
+        bound = bound.setFromMatrixPosition(this.mesh.matrixWorld);
+        bound.project(camera);
+
+        if (bound.x > 1.05) {
+            this.pos.x = -this.pos.x + 0.1;
+        } else if (bound.x < -1.05) {
+            this.pos.x = -this.pos.x - 0.1;
+        }
+
+        if (bound.y > 1.05) {
+            this.pos.y = -this.pos.y + 0.1;
+        } else if (bound.y < -1.05) {
+            this.pos.y = -this.pos.y - 0.1;
+        }
+    }
+
+    update(camera) {
         // Update the ship's position
         this.vel.add(this.acc);
         this.vel.clampLength(0, this.maxSpeed);
         this.pos.add(this.vel);
+        this.confineWalls(camera);
         this.mesh.position.set(this.pos.x, this.pos.y, 0);
 
         this.acc.set(0, 0);
@@ -45,10 +71,44 @@ export class Ship {
         this.mesh.rotation.z = this.dir.angle() - 1.5708;
         // Reset the turn speed, if we are still turning, it will be set again in controls.js
         this.turnSpeed = 0;
+        this.frameCounter++;
+
+        // Update the opacity of the particles and remove them if they are too transparent
+        const tbremoved = [];
+        this.burnerParticles.forEach((particle) => {
+            particle.material.opacity *= 0.95;
+            if (particle.material.opacity <= 0.05) {
+                tbremoved.push(particle);
+            }
+        });
+
+        tbremoved.forEach((particle) => {
+            particle.geometry.dispose();
+            particle.material.dispose();
+            this.scene.remove(particle);
+            this.burnerParticles.splice(this.burnerParticles.indexOf(particle), 1);
+        });
     }
 
     accelerate() {
         this.acc.addScaledVector(this.dir, this.accConst);
+
+        // Every 5 frames, spawn a line and add it to the burnerParticles array
+        if (this.frameCounter % 1 == 0) {
+            const startDir = this.dir.clone().applyMatrix3(new THREE.Matrix3().makeRotation( Math.random() * Math.PI/10 - Math.PI/20 ));
+            const endDir = this.dir.clone().applyMatrix3(new THREE.Matrix3().makeRotation( Math.random() * Math.PI/8 - Math.PI/16 ));
+            const lengthDivider = Math.random() * 2 + 6;
+
+            const geometry = new THREE.BufferGeometry().setFromPoints([
+                    new THREE.Vector3(this.pos.x - startDir.x/16, this.pos.y - startDir.y/16, 0),
+                    new THREE.Vector3(this.pos.x - endDir.x/lengthDivider, this.pos.y - endDir.y/lengthDivider, 0)
+            ])
+            const material = new THREE.LineBasicMaterial( { color: 0xffffff, opacity: Math.random()/2 + 0.5, transparent: true } );
+            const line = new THREE.Line( geometry, material );
+
+            this.burnerParticles.push(line);
+            this.scene.add(line);
+        }
     }
 
     deccelerate() {
@@ -90,20 +150,20 @@ export class Bullet {
         this.direction.normalize();
         this.speed = 0.02;
 
-        // TODO: Change this to sprite
-        // const map = new THREE.TextureLoader().load('../bullet.png');
-        // const mat = new THREE.SpriteMaterial( { map: map } );
-        // this.sprite = new THREE.Sprite( mat );
-        const geometry = new THREE.ConeGeometry( 0.05, 0.1, 3 );
-        const material = new THREE.MeshBasicMaterial( { color: 0x55deff } );
-        this.sprite = new THREE.Mesh( geometry, material );
+        const texture = new THREE.TextureLoader().load('assets/bullet.png');
+        const material = new THREE.SpriteMaterial({ map: texture, color: 0xffffff, transparent: true, alphaTest: 0.5, rotation: this.direction.angle() - Math.PI/2 });
+        this.sprite = new THREE.Sprite(material);
+        this.sprite.scale.set(0.3, 0.3, 0.3);
     }
 
     isOutOfBounds() {
-        return (this.position.x > window.innerWidth/2 || 
-                this.position.x < -window.innerWidth/2 || 
-                this.position.y > window.innerHeight/2 || 
-                this.position.y < -window.innerHeight/2)
+        // Do some safe assumption for now to not do the whole matrix multiplication
+        const width = 10;
+        const height = 10;
+        return (this.position.x > width || 
+                this.position.x < -width || 
+                this.position.y > height || 
+                this.position.y < -height)
     }
 
     static updateBullets() {

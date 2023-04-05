@@ -34,7 +34,7 @@ export class Sun {
     gravityFunc(pos) {
         const dir = pos.negate().normalize();
         const skewed = new THREE.Vector3(dir.x, dir.y, 0).applyAxisAngle(new THREE.Vector3(0, 0, 1), Math.PI/6);
-        return new THREE.Vector2(skewed.x * 0.00003, skewed.y * 0.00003);
+        return new THREE.Vector2(skewed.x * 0.00001, skewed.y * 0.00001);
     }
 }
 

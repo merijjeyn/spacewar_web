@@ -4,7 +4,7 @@ import { Ship, Bullet } from './ship.js'
 import { Sun } from './sun.js';
 
 const scene = new THREE.Scene();
-const camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.1, 1000 );
+const camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight );
 
 const renderer = new THREE.WebGLRenderer();
 renderer.setSize( window.innerWidth, window.innerHeight );
@@ -14,8 +14,8 @@ const ambientLight = new THREE.AmbientLight(0xffffff, 1);
 ambientLight.intensity = 0.5;
 scene.add(ambientLight);
 
-const ship1 = new Ship(new THREE.Vector2(2, -2), scene, 0xfa5a5a);
-const ship2 = new Ship(new THREE.Vector2(-2, 2), scene, 0x940101);
+const ship1 = new Ship(new THREE.Vector3(2, -2, 0), scene, 0xfa5a5a);
+const ship2 = new Ship(new THREE.Vector3(-2, 2, 0), scene, 0x940101);
 const sun = new Sun(ship1, ship2, scene);
 
 // pass the reference of the scene to the bullet class since we spawn and remove bullet sprites
@@ -27,15 +27,22 @@ camera.position.z = 5;
 
 controls.setupControls(ship1, ship2);
 
+const frustum = new THREE.Frustum();
+frustum.set
+
 function animate() {
 	requestAnimationFrame( animate );
 	renderer.render( scene, camera );
 
 	controls.updateControls(ship1, ship2);
 	sun.update();
-	ship1.update();
+	ship1.update(camera);
 	ship2.update();
 	Bullet.updateBullets();
+
+	// camera.updateMatrix();
+	// camera.updateMatrixWorld();
+	// frustum.setFromProjectionMatrix( new THREE.Matrix4().multiplyMatrices( camera.projectionMatrix, camera.matrixWorldInverse ) );	
 }
 
 animate();
