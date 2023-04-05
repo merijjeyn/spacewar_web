@@ -1,3 +1,8 @@
+/*
+BEWARE: Most of this file is imported from a Unity project with the help of chatgpt
+and for a slightly different purpose. Take it with a grain of salt.
+*/ 
+
 import * as THREE from "three";
 import { Queue, degToRad } from "./utils.js";
 
@@ -83,14 +88,22 @@ export class Line {
 
     addLineRendererToActiveLines(points, alpha) {
         // Create the new line geometry
-        const geometry = new THREE.BufferGeometry();
-        const positionArray = new Float32Array(points.length * 3);
+        // const positionArray = new Float32Array(points.length * 3);
+        const positionArray = [];
         for (let i = 0; i < points.length; i++) {
-            positionArray[i * 3] = points[i].x;
-            positionArray[i * 3 + 1] = points[i].y;
-            positionArray[i * 3 + 2] = 0; // assuming z=0 for 2D points
+            // positionArray[i * 3] = points[i].x;
+            // positionArray[i * 3 + 1] = points[i].y;
+            // positionArray[i * 3 + 2] = 0; // assuming z=0 for 2D points
+
+            positionArray.push(new THREE.Vector3(points[i].x, points[i].y, 0));
         }
-        geometry.setAttribute('position', new THREE.BufferAttribute(positionArray, 3));
+        
+        const cmrc = new THREE.CatmullRomCurve3(positionArray);
+
+        const pnts = cmrc.getPoints(50);
+
+        const geometry = new THREE.BufferGeometry().setFromPoints(pnts);
+        // geometry.setAttribute('position', new THREE.BufferAttribute(positionArray, 3));
 
         // Create the new line material
         const material = new THREE.LineBasicMaterial({
