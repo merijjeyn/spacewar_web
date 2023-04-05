@@ -1,7 +1,11 @@
+import { Queue } from "./utils.js";
+import { Line, Curve } from "./blackhole.js";
+import * as THREE from "three";
+import { QuadraticBezierCurve } from "three";
+
 const keysDown = {};
 
-export function setupControls(ship1, ship2) {
-
+export function setupControls(scene, ship1, ship2) {
     document.onkeydown = function(e) {
         switch (e.key) {
             case "w":
@@ -9,9 +13,18 @@ export function setupControls(ship1, ship2) {
                     ship1.fire();
                     keysDown["w"] = true;
                 }
+
+                // ============= DEBUG =============
+                curve.onFrame();
+
+                // ============= DEBUG =============
                 break;
             case "s":
                 keysDown["s"] = true;
+
+                // ============= DEBUG =============
+
+                // ============= DEBUG =============
                 break;
             case "d":
                 keysDown["d"] = true;

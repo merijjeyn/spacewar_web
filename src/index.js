@@ -3,6 +3,8 @@ import * as controls from './controls.js'
 import { Ship, Bullet } from './ship.js'
 import { Sun } from './sun.js';
 
+import { Curve } from './blackhole.js';
+
 const scene = new THREE.Scene();
 const camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight );
 
@@ -25,12 +27,27 @@ Bullet.ship2 = ship2;
 
 camera.position.z = 5;
 
-controls.setupControls(ship1, ship2);
+controls.setupControls(scene, ship1, ship2);
 
 const frustum = new THREE.Frustum();
 frustum.set
 
+// ===================== DEBUG =====================
+
+const curve = new Curve(scene, [
+	new THREE.Vector2(1, 0), 
+	new THREE.Vector2(1.1, 0.1), 
+	new THREE.Vector2(1.2, 0), 
+	new THREE.Vector2(1.3, 0.1),
+	new THREE.Vector2(1.4, 0),
+	new THREE.Vector2(1.5, 0.1),
+],
+0);
+
 function animate() {
+
+	curve.onFrame();
+	// ===================== DEBUG =====================
 	requestAnimationFrame( animate );
 	renderer.render( scene, camera );
 

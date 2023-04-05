@@ -129,8 +129,6 @@ export class Ship {
 
     applyDamage(dmg) {
         this.health -= dmg;
-        console.log(this.health)
-        console.log("ship hit")
     }
 
     pullWithVector(pullVec) {
@@ -167,9 +165,6 @@ export class Bullet {
     }
 
     static updateBullets() {
-        // console.log("bulletInstances: ", this.bulletInstances);
-        // console.log("scene children:", this.scene.children)
-
         const tbremoved = [];
         this.bulletInstances.forEach((bullet) => {
             bullet.position.addScaledVector(bullet.direction, bullet.speed);
