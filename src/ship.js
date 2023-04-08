@@ -5,6 +5,7 @@ export class Ship {
     static colliderSize = 0.1;
 
     constructor(position, scene, color=0x55deff) {
+        this.initPos = position;
         this.pos = position;
         this.scene = scene;
 
@@ -134,6 +135,14 @@ export class Ship {
     pullWithVector(pullVec) {
         this.acc.add(pullVec);
     }
+
+    restart() {
+        this.pos = this.initPos.clone();
+        this.dir = new THREE.Vector2(0, 1);
+        this.vel = new THREE.Vector2();
+        this.acc = new THREE.Vector2();
+        this.health = 100;
+    }
 }
 
 export class Bullet {
@@ -195,6 +204,15 @@ export class Bullet {
         const bullet = new Bullet(position, direction.clone());
         this.bulletInstances.add(bullet);
         this.scene.add(bullet.sprite);
+    }
+
+    static destroyAllBullets() {
+        this.bulletInstances.forEach((bullet) => {
+            bullet.sprite.texture.dispose();
+            bullet.sprite.material.dispose();
+            this.scene.remove(bullet.sprite);
+        })
+        this.bulletInstances.clear();
     }
 
     

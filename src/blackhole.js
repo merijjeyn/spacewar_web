@@ -10,13 +10,13 @@ const activeLineCount = 50;
 
 const curveWidth = 1; // Sanirim
 
-const distBetweenParallelLines = 0.1;
+const distBetweenParallelLines = 0.15;
 
 const curveOpacity = 1;
 
 const curvePointCount = 6;
 
-const randDispRange = 0.013;
+const randDispRange = 0.022;
 
 export class Curve {
 
@@ -54,7 +54,7 @@ export class Curve {
             }
 
             var widthMult = (mid - Math.abs(mid - i)) / mid + 0.1;
-            this.lines[i].addLineRendererToActiveLines(displacedPoints, curveOpacity * widthMult * widthMult);
+            this.lines[i].addLineRendererToActiveLines(displacedPoints, curveOpacity * widthMult);
         }
 
         for (var i = 0; i < this.curvePoints.length; i++) {

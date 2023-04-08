@@ -5,7 +5,7 @@ import { QuadraticBezierCurve } from "three";
 
 const keysDown = {};
 
-export function setupControls(scene, ship1, ship2) {
+export function setupControls(scene, ship1, ship2, togglePause, restartGame) {
     document.onkeydown = function(e) {
         switch (e.key) {
             case "w":
@@ -79,8 +79,21 @@ export function setupControls(scene, ship1, ship2) {
                 keysDown["ArrowLeft"] = false;
                 break;
 
+            case "p":
+                togglePause();
+                break;
+            case "r":
+                restartGame();
+                break;
+                
+        }
+
+        if(e.keyCode == 27) {
+            togglePause();
         }
     }
+
+
 }
 
 export function updateControls(ship1, ship2) {

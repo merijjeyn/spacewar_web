@@ -1,4 +1,5 @@
 import * as THREE from 'three';
+import cnf from './config.js';
 
 
 export class Sun {
@@ -32,6 +33,10 @@ export class Sun {
     }
 
     gravityFunc(pos) {
+        if(cnf.DEBUG) {
+            return new THREE.Vector2(0, 0);
+        }
+
         const dir = pos.negate().normalize();
         const skewed = new THREE.Vector3(dir.x, dir.y, 0).applyAxisAngle(new THREE.Vector3(0, 0, 1), Math.PI/6);
         return new THREE.Vector2(skewed.x * 0.00001, skewed.y * 0.00001);
