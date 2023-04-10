@@ -13,18 +13,9 @@ export function setupControls(scene, ship1, ship2, togglePause, restartGame) {
                     ship1.fire();
                     keysDown["w"] = true;
                 }
-
-                // ============= DEBUG =============
-                curve.onFrame();
-
-                // ============= DEBUG =============
                 break;
             case "s":
                 keysDown["s"] = true;
-
-                // ============= DEBUG =============
-
-                // ============= DEBUG =============
                 break;
             case "d":
                 keysDown["d"] = true;
@@ -85,7 +76,12 @@ export function setupControls(scene, ship1, ship2, togglePause, restartGame) {
             case "r":
                 restartGame();
                 break;
-                
+            case "e":
+                ship1.tearRiftWithBullets();
+                break;
+            case ".":
+                ship2.tearRiftWithBullets();
+                break;
         }
 
         if(e.keyCode == 27) {

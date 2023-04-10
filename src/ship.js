@@ -1,13 +1,18 @@
 import * as THREE from 'three';
+import { Vector3 } from 'three';
+
+import { generateCurve } from './blackhole.js';
+import { dist } from './utils.js';
 
 // A ship class that can be moved around the screen and fire bullets
 export class Ship {
     static colliderSize = 0.1;
 
-    constructor(position, scene, color=0x55deff) {
+    constructor(position, scene, camera, color=0x55deff) {
         this.initPos = position;
         this.pos = position;
         this.scene = scene;
+        this.camera = camera;
 
         this.dir = new THREE.Vector2(0, 1);
         this.vel = new THREE.Vector2();
@@ -125,7 +130,7 @@ export class Ship {
     }
 
     fire() {
-        Bullet.spawnBullet(new THREE.Vector2(this.pos.x + this.dir.x/5, this.pos.y + this.dir.y/5), this.dir);
+        Bullet.spawnBullet(this, new THREE.Vector2(this.pos.x + this.dir.x/5, this.pos.y + this.dir.y/5), this.dir);
     }
 
     applyDamage(dmg) {
@@ -143,6 +148,10 @@ export class Ship {
         this.acc = new THREE.Vector2();
         this.health = 100;
     }
+
+    tearRiftWithBullets() {
+        Bullet.tearRiftWithBullets(this.scene, this);
+    }
 }
 
 export class Bullet {
@@ -151,11 +160,13 @@ export class Bullet {
     static ship1;
     static ship2;
 
-    constructor(position, direction) {
+    constructor(owner, position, direction) {
         this.position = position;
         this.direction = direction;
+        this.owner = owner;
         this.direction.normalize();
         this.speed = 0.02;
+        this.isGettingPulled = false;
 
         const texture = new THREE.TextureLoader().load('assets/bullet.png');
         const material = new THREE.SpriteMaterial({ map: texture, color: 0xffffff, transparent: true, alphaTest: 0.5, rotation: this.direction.angle() - Math.PI/2 });
@@ -173,10 +184,107 @@ export class Bullet {
                 this.position.y < -height)
     }
 
+    static tearRiftWithBullets(scene, owner) {
+        const enemy = owner == Bullet.ship1 ? Bullet.ship2 : Bullet.ship1;
+        
+        // Find the closest bullet to the enemy
+        let closestBullet = null;
+        let closestDist = Infinity;
+        this.bulletInstances.forEach((bullet) => {
+            if(bullet.owner == owner) {
+                const d = dist(bullet.position, enemy.pos);
+                if(d < closestDist) {
+                    closestBullet = bullet;
+                    closestDist = d;
+                }
+            }
+        });
+
+        if(closestBullet) {
+            // Pull bullets towards the closest bullet
+            this.bulletInstances.forEach((bullet) => {
+                if(bullet.owner == owner) {
+                    bullet.isGettingPulled = true;
+                    const startPos = bullet.position.clone();
+                    const endPos = closestBullet.position.clone();
+                    
+                    const tween = new TWEEN.Tween(startPos)
+                        .to(endPos, 500)
+                        .easing(TWEEN.Easing.Quadratic.InOut)
+                        .onUpdate(() => {
+                            bullet.position = startPos;
+                            // bullet.sprite.position.set(bullet.position.x, bullet.position.y, 0)
+                        })
+                        .start();
+                    
+                    tween.onComplete(() => {
+                        // Generate the curve and pull the enemy when the animation completes (for only one of the bullets)
+                        if(bullet == closestBullet) {
+                            const angle = Math.atan2(enemy.pos.y - closestBullet.position.y, enemy.pos.x - closestBullet.position.x);
+                            generateCurve(scene, closestBullet.position, angle);
+
+                            enemy.pullWithVector(new THREE.Vector2(Math.cos(angle), Math.sin(angle)).multiplyScalar(-0.01));
+                        }
+
+                        bullet.isGettingPulled = false;
+                        
+                        // Remove the bullet (We should be good to remove here since before reaching this line, all the bullets will have been processed)
+                        this.bulletInstances.delete(bullet);
+                        this.scene.remove(bullet.sprite);
+                    });
+                }
+            })
+
+            // Create a rift at the bullet location
+            // const angle = Math.atan2(enemy.pos.y - closestBullet.position.y, enemy.pos.x - closestBullet.position.x);
+            // generateCurve(scene, closestBullet.position, angle);
+
+            // Pull the enemy towards the bullet
+            // enemy.pullWithVector(new THREE.Vector2(Math.cos(angle), Math.sin(angle)).multiplyScalar(-0.01));
+
+            // Remove all bullets that belong to self
+            // const tbremoved = [];
+            // this.bulletInstances.forEach((bullet) => {
+            //     if(bullet.owner == owner) {
+            //         tbremoved.push(bullet);
+            //     }
+            // })
+            // console.log(tbremoved);
+            // tbremoved.forEach((bullet) => {
+            //     this.bulletInstances.delete(bullet);
+            //     this.scene.remove(bullet.sprite);
+            // })
+        }
+    }
+
+    static pullBulletsTowards(bullets, pos) {
+        bullets.forEach((bullet) => {
+            bullet.isGettingPulled = true;
+            const startPos = bullet.position.clone();
+            const endPos = pos.clone();
+
+            const tween = new TWEEN.Tween(startPos)
+                .to(endPos, 500)
+                .easing(TWEEN.Easing.Quadratic.InOut)
+                .onUpdate(() => {
+                    bullet.position = startPos;
+                    // bullet.sprite.position.set(bullet.position.x, bullet.position.y, 0)
+                })
+                .start();
+            
+            tween.onComplete(() => {
+                bullet.isGettingPulled = false;
+            });
+        })
+    }
+            
+
     static updateBullets() {
         const tbremoved = [];
         this.bulletInstances.forEach((bullet) => {
-            bullet.position.addScaledVector(bullet.direction, bullet.speed);
+            if(!bullet.isGettingPulled) {
+                bullet.position.addScaledVector(bullet.direction, bullet.speed);
+            }
             bullet.sprite.position.set(bullet.position.x, bullet.position.y, 0)
             
             if(bullet.isOutOfBounds()) {
@@ -200,8 +308,8 @@ export class Bullet {
         })
     }
 
-    static spawnBullet(position, direction) {
-        const bullet = new Bullet(position, direction.clone());
+    static spawnBullet(owner, position, direction) {
+        const bullet = new Bullet(owner, position, direction.clone());
         this.bulletInstances.add(bullet);
         this.scene.add(bullet.sprite);
     }
@@ -216,9 +324,4 @@ export class Bullet {
     }
 
     
-}
-
-//TODO remove this use a vector thing
-function dist(pos1, pos2) {
-    return ((pos1.x - pos2.x)**2 + (pos1.y - pos2.y)**2)**0.5
 }

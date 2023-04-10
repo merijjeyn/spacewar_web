@@ -1,5 +1,14 @@
+export function dist(pos1, pos2) {
+  return ((pos1.x - pos2.x)**2 + (pos1.y - pos2.y)**2)**0.5
+}
+
 export function degToRad(degrees) {
     return degrees * (Math.PI / 180);
+}
+
+export function curveOpacityDecreaseFunc(frameAge) {
+    return 1 - Math.log(frameAge * 0.006 + 1) / Math.log(8);
+    // return Math.pow(1 - Math.log(frameAge * 0.01 + 1) / Math.log(11), 2);
 }
 
 export class Queue {
