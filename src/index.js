@@ -27,8 +27,12 @@ if(cnf.DEBUG) {
 	pos2 = new THREE.Vector3(-2, 2, 0);
 }
 
-const ship1 = new Ship(pos1, scene, camera, 0xfa5a5a);
-const ship2 = new Ship(pos2, scene, camera, 0x940101);
+
+const healthBar1 = document.getElementById("health-bar-1");
+const healthBar2 = document.getElementById("health-bar-2");
+
+const ship1 = new Ship(pos1, scene, healthBar1, 0xfa5a5a);
+const ship2 = new Ship(pos2, scene, healthBar2, 0x940101);
 const sun = new Sun(ship1, ship2, scene);
 
 // pass the reference of the scene to the bullet class since we spawn and remove bullet sprites

@@ -17,13 +17,18 @@ const curveOpacityStart = 1;
 const randDispRange = 0.022;
 
 
-const curvePointCount = 8;
+// const curvePointCount = 8;
 
-const curveLength = 1.2;
+// const curveLength = 1.2;
 
 const heightDisplacement = 0.1;
 
-export function generateCurve(scene, center, angle) {
+export function generateCurve(scene, center, angle, bulletCount) {
+    //Calculate a curveLenght based on the bulletCount
+    // const curveLength = bulletCount * 0.4;
+    const curveLength = Math.log(bulletCount + 2) / Math.log(2) * 0.6;
+    const curvePointCount = Math.floor(curveLength / 0.2);
+
     var lengthBetweenPoints = curveLength / curvePointCount;
     var curvePoints = [];
 
@@ -61,6 +66,7 @@ export class Curve {
         this.lines = [];
         // this.lineCount = 1 + 2 * Math.floor(curveWidth / (2 * distBetweenParallelLines));
         this.lineCount = 3;
+        // console.log(this.lineCount);
         for (var i = 0; i < this.lineCount; i++) {
             this.lines.push(new Line(scene));
         }
@@ -79,6 +85,17 @@ export class Curve {
         tbremoved.forEach((curve) => {
             Curve.activeCurves.splice(Curve.activeCurves.indexOf(curve), 1);
         });
+    }
+
+    distanceToPoint(point) {
+        var minDist = Number.MAX_VALUE;
+        for (var i = 0; i < this.curvePoints.length; i++) {
+            var dist = this.curvePoints[i].distanceTo(point);
+            if (dist < minDist) {
+                minDist = dist;
+            }
+        }
+        return minDist;
     }
 
     onFrame() {
@@ -105,7 +122,7 @@ export class Curve {
 
         // displace points
         for (var i = 0; i < this.curvePoints.length; i++) {
-            var mid = curvePointCount / 2;
+            var mid = this.curvePoints.length / 2;
             var closenessToCenter = (mid - Math.abs(mid - i)) / (mid * 3 / 4) + (1 / 4);
 
             var randRadius = randDispRange * closenessToCenter;
@@ -117,7 +134,7 @@ export class Curve {
 
         // Update age and opacity
         this.frameAge++;
-        this.curveOpacity = curveOpacityDecreaseFunc(this.frameAge);
+        this.curveOpacity = curveOpacityDecreaseFunc(this.frameAge, this.curvePoints.length);
         if (this.curveOpacity <= 0.0001) {
             this.destroyLineRenderers();
             return false;

@@ -31,3 +31,40 @@ body {
     font-weight: bold;
     transform: translateZ(0); /* Fix for blurry text on some devices */
 }
+
+.health-bar {
+    width: 180px;
+    height: 16px;
+    border-radius: 2px;
+    border: #c9cdd6 4px solid;
+    overflow: hidden;
+    position: fixed;
+    bottom: 10px;
+}
+
+.left {
+    left: 10px;
+}
+
+.right  {
+    right: 10px;
+}
+
+.bar {
+    height: 100%;
+    background-color: rgb(175, 23, 23);
+    transition: width 0.3s ease-in-out;
+}
+  
+
+.shake {
+    animation: shake 0.2s ease-in-out;
+}
+
+@keyframes shake {
+    0% { transform: rotate(0); }
+    25% { transform: rotate(4deg); }
+    50% { transform: rotate(0); }
+    75% { transform: rotate(-4deg); }
+    100% { transform: rotate(0); }
+}

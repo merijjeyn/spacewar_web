@@ -6,9 +6,11 @@ export function degToRad(degrees) {
     return degrees * (Math.PI / 180);
 }
 
-export function curveOpacityDecreaseFunc(frameAge) {
-    return 1 - Math.log(frameAge * 0.006 + 1) / Math.log(8);
-    // return Math.pow(1 - Math.log(frameAge * 0.01 + 1) / Math.log(11), 2);
+export function curveOpacityDecreaseFunc(frameAge, pointCount) {
+    const baseDecrease = Math.log(frameAge * 0.006 + 1) / Math.log(8);
+    const pointCountDecrease = Math.log(4) / Math.log(pointCount * 4 + 4);
+
+    return (1 - baseDecrease * pointCountDecrease * 2.5);
 }
 
 export class Queue {

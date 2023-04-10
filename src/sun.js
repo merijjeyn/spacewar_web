@@ -86,8 +86,8 @@ class Line {
         const skewAngle = gaussianRandom(0.05, 0.005);
 
         const points = []
-        points.push(new THREE.Vector3(distToCenter * Math.cos(angle), distToCenter * Math.sin(angle), 0));
-        points.push(new THREE.Vector3((distToCenter + length) * Math.cos(angle + skewAngle), (distToCenter + length) * Math.sin(angle + skewAngle), 0));
+        points.push(new THREE.Vector3(distToCenter * Math.cos(angle), distToCenter * Math.sin(angle), 1));
+        points.push(new THREE.Vector3((distToCenter + length) * Math.cos(angle + skewAngle), (distToCenter + length) * Math.sin(angle + skewAngle), 1));
         const lineGeometry = new THREE.BufferGeometry().setFromPoints( points );
 
         return new THREE.Line(lineGeometry, lineMaterial);

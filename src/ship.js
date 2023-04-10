@@ -2,17 +2,18 @@ import * as THREE from 'three';
 import { Vector3 } from 'three';
 
 import { generateCurve } from './blackhole.js';
+import config from './config.js';
 import { dist } from './utils.js';
 
 // A ship class that can be moved around the screen and fire bullets
 export class Ship {
     static colliderSize = 0.1;
 
-    constructor(position, scene, camera, color=0x55deff) {
+    constructor(position, scene, healthBar, color=0x55deff) {
         this.initPos = position;
         this.pos = position;
         this.scene = scene;
-        this.camera = camera;
+        this.healthBar = healthBar;
 
         this.dir = new THREE.Vector2(0, 1);
         this.vel = new THREE.Vector2();
@@ -23,6 +24,9 @@ export class Ship {
         this.friction = 0.01;
         this.turnSpeed = 0;
         this.health = 100;
+
+        this.fireRate = 0.5;
+        this.fireRateCounter = 0;
 
         const geometry = new THREE.ConeGeometry( 0.05, 0.15, 8 );
         const material = new THREE.MeshBasicMaterial( { color: color } );
@@ -66,6 +70,7 @@ export class Ship {
         this.pos.add(this.vel);
         this.confineWalls(camera);
         this.mesh.position.set(this.pos.x, this.pos.y, 0);
+        this.fireRateCounter -= 1;
 
         this.acc.set(0, 0);
 
@@ -75,6 +80,7 @@ export class Ship {
         // Update the ship's rotation
         this.dir.rotateAround(new THREE.Vector2(), -this.turnSpeed);
         this.mesh.rotation.z = this.dir.angle() - 1.5708;
+
         // Reset the turn speed, if we are still turning, it will be set again in controls.js
         this.turnSpeed = 0;
         this.frameCounter++;
@@ -130,11 +136,22 @@ export class Ship {
     }
 
     fire() {
+        if (this.fireRateCounter > 0 && !config.DEBUG) {
+            return;
+        }
+        this.fireRateCounter = this.fireRate * 60;
+
         Bullet.spawnBullet(this, new THREE.Vector2(this.pos.x + this.dir.x/5, this.pos.y + this.dir.y/5), this.dir);
     }
 
     applyDamage(dmg) {
         this.health -= dmg;
+        this.healthBar.style.width = `${this.health}%`;
+        this.healthBar.parentElement.classList.add('shake');
+        setTimeout(() => {
+            this.healthBar.parentElement.classList.remove('shake');
+        }
+        , 200);
     }
 
     pullWithVector(pullVec) {
@@ -202,58 +219,47 @@ export class Bullet {
 
         if(closestBullet) {
             // Pull bullets towards the closest bullet
+            const ownerBullets = [];
             this.bulletInstances.forEach((bullet) => {
                 if(bullet.owner == owner) {
-                    bullet.isGettingPulled = true;
-                    const startPos = bullet.position.clone();
-                    const endPos = closestBullet.position.clone();
-                    
-                    const tween = new TWEEN.Tween(startPos)
-                        .to(endPos, 500)
-                        .easing(TWEEN.Easing.Quadratic.InOut)
-                        .onUpdate(() => {
-                            bullet.position = startPos;
-                            // bullet.sprite.position.set(bullet.position.x, bullet.position.y, 0)
-                        })
-                        .start();
-                    
-                    tween.onComplete(() => {
-                        // Generate the curve and pull the enemy when the animation completes (for only one of the bullets)
-                        if(bullet == closestBullet) {
-                            const angle = Math.atan2(enemy.pos.y - closestBullet.position.y, enemy.pos.x - closestBullet.position.x);
-                            generateCurve(scene, closestBullet.position, angle);
-
-                            enemy.pullWithVector(new THREE.Vector2(Math.cos(angle), Math.sin(angle)).multiplyScalar(-0.01));
-                        }
-
-                        bullet.isGettingPulled = false;
-                        
-                        // Remove the bullet (We should be good to remove here since before reaching this line, all the bullets will have been processed)
-                        this.bulletInstances.delete(bullet);
-                        this.scene.remove(bullet.sprite);
-                    });
+                    ownerBullets.push(bullet);
                 }
+            });
+
+            ownerBullets.forEach((bullet) => {
+                bullet.isGettingPulled = true;
+                const startPos = bullet.position.clone();
+                const endPos = closestBullet.position.clone();
+                
+                const tween = new TWEEN.Tween(startPos)
+                    .to(endPos, 500)
+                    .easing(TWEEN.Easing.Quadratic.InOut)
+                    .onUpdate(() => {
+                        bullet.position = startPos;
+                        // bullet.sprite.position.set(bullet.position.x, bullet.position.y, 0)
+                    })
+                    .start();
+                
+                tween.onComplete(() => {
+                    // Generate the curve and pull the enemy when the animation completes (for only one of the bullets)
+                    if(bullet == closestBullet) {
+                        const angle = Math.atan2(enemy.pos.y - closestBullet.position.y, enemy.pos.x - closestBullet.position.x);
+                        generateCurve(scene, closestBullet.position, angle, ownerBullets.length);
+
+                        // Might be better to move this to the Curve initialization
+                        const dist = closestBullet.position.distanceTo(enemy.pos);
+                        const pullForce = 0.004 * Math.log(ownerBullets.length + 2) / Math.log(dist + 2);
+                        console.log(pullForce, Math.log(ownerBullets.length + 2), Math.log(dist + 2));
+                        enemy.pullWithVector(new THREE.Vector2(Math.cos(angle), Math.sin(angle)).multiplyScalar(-pullForce));
+                    }
+
+                    bullet.isGettingPulled = false;
+                    
+                    // Remove the bullet (We should be good to remove here since before reaching this line, all the bullets will have been processed)
+                    this.bulletInstances.delete(bullet);
+                    this.scene.remove(bullet.sprite);
+                });
             })
-
-            // Create a rift at the bullet location
-            // const angle = Math.atan2(enemy.pos.y - closestBullet.position.y, enemy.pos.x - closestBullet.position.x);
-            // generateCurve(scene, closestBullet.position, angle);
-
-            // Pull the enemy towards the bullet
-            // enemy.pullWithVector(new THREE.Vector2(Math.cos(angle), Math.sin(angle)).multiplyScalar(-0.01));
-
-            // Remove all bullets that belong to self
-            // const tbremoved = [];
-            // this.bulletInstances.forEach((bullet) => {
-            //     if(bullet.owner == owner) {
-            //         tbremoved.push(bullet);
-            //     }
-            // })
-            // console.log(tbremoved);
-            // tbremoved.forEach((bullet) => {
-            //     this.bulletInstances.delete(bullet);
-            //     this.scene.remove(bullet.sprite);
-            // })
         }
     }
 
@@ -292,11 +298,11 @@ export class Bullet {
             }
             
             if(dist(bullet.position, this.ship1.pos) < Ship.colliderSize) {
-                this.ship1.applyDamage()
+                this.ship1.applyDamage(50);
                 tbremoved.push(bullet);
             }
             if(dist(bullet.position, this.ship2.pos) < Ship.colliderSize) {
-                this.ship2.applyDamage(50)
+                this.ship2.applyDamage(50);
                 tbremoved.push(bullet);
             }
             
