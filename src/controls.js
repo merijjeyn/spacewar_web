@@ -1,5 +1,5 @@
 import { Queue } from "./utils.js";
-import { Line, Curve } from "./blackhole.js";
+import { Line, Curve } from "./awesomeRift.js";
 import * as THREE from "three";
 import { QuadraticBezierCurve } from "three";
 

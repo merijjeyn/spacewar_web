@@ -5,7 +5,7 @@ import cnf from './config.js';
 export class Sun {
     constructor(ship1, ship2, scene, pos=new THREE.Vector2(0, 0)) {
         this.pos = pos
-        this.rad = 0.5;
+        this.rad = 1; // This is hardcoded for now because it was hard to calculate the radius from the animation itself :D
         
         this.ship1 = ship1;
         this.ship2 = ship2;
@@ -38,8 +38,8 @@ export class Sun {
         }
 
         const dir = pos.negate().normalize();
-        const skewed = new THREE.Vector3(dir.x, dir.y, 0).applyAxisAngle(new THREE.Vector3(0, 0, 1), Math.PI/6);
-        return new THREE.Vector2(skewed.x * 0.00001, skewed.y * 0.00001);
+        const skewed = new THREE.Vector3(dir.x, dir.y, 0).applyAxisAngle(new THREE.Vector3(0, 0, 1), Math.PI/4);
+        return new THREE.Vector2(skewed.x * 0.00002, skewed.y * 0.00002);
     }
 }
 

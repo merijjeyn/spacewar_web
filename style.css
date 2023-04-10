@@ -3,6 +3,11 @@
     src: url('./assets/osaka.otf') format('opentype');
 }
 
+@font-face {
+    font-family: 'Atari';
+    src: url('./assets/atari.ttf');
+}
+
 body {
     margin: 0;
     padding: 0;
@@ -24,7 +29,9 @@ body {
 }
 .text {
     color: rgb(211, 206, 191);
-    font-size: 1em;
+    /* width: 50%; */
+    padding: 0 32px;
+    font-size: 0.9em;
     letter-spacing: 0.2em;
     line-height: 1.5;
     text-shadow: 1px 1px 1px rgba(0,0,0,0.5);
@@ -50,9 +57,16 @@ body {
     right: 10px;
 }
 
+.left > .bar {
+    background-color: #ec3e3d;
+}
+
+.right > .bar {
+    background-color: #b51314;
+}
+
 .bar {
     height: 100%;
-    background-color: rgb(175, 23, 23);
     transition: width 0.3s ease-in-out;
 }
   
@@ -67,4 +81,23 @@ body {
     50% { transform: rotate(0); }
     75% { transform: rotate(-4deg); }
     100% { transform: rotate(0); }
+}
+
+.score {
+    position: fixed;
+    top: 20px;
+}
+
+.score.left {
+    left: 20px;
+}
+
+.score.right {
+    right: 20px;    
+}
+
+.score-text {
+    color: white;
+    font-size: 2em;
+    font-family: 'Atari';
 }

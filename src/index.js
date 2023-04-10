@@ -3,7 +3,7 @@ import * as controls from './controls.js'
 import { Ship, Bullet } from './ship.js'
 import { Sun } from './sun.js';
 
-import { Curve } from './blackhole.js';
+import { Curve } from './awesomeRift.js';
 import cnf from './config.js';
 import config from './config.js';
 
@@ -32,7 +32,7 @@ if(cnf.DEBUG) {
 if(config.DEBUG) {
 	// create a new grid helper
 	const size = 10;
-	const divisions = 100;
+	const divisions = 10;
 	const colorCenterLine = 0x444444;
 	const colorGrid = 0x22222;
 	const gridHelper = new THREE.GridHelper(size, divisions, colorCenterLine, colorGrid);
@@ -43,12 +43,11 @@ if(config.DEBUG) {
 }
 
 
-
 const healthBar1 = document.getElementById("health-bar-1");
 const healthBar2 = document.getElementById("health-bar-2");
 
-const ship1 = new Ship(pos1, scene, healthBar1, 0xfa5a5a);
-const ship2 = new Ship(pos2, scene, healthBar2, 0x940101);
+const ship1 = new Ship(pos1, scene, healthBar1, 0xfa5a5a, 'assets/ship1.png');
+const ship2 = new Ship(pos2, scene, healthBar2, 0x940101, 'assets/ship2.png');
 const sun = new Sun(ship1, ship2, scene);
 
 // pass the reference of the scene to the bullet class since we spawn and remove bullet sprites
@@ -77,6 +76,25 @@ const togglePause = () => {
 	}
 }
 
+var player1Wins = 0;
+var player2Wins = 0;
+const isGameFinished = () => {
+	if(ship2.health <= 0) {
+		player1Wins++;
+		document.getElementById("score-1").innerHTML = player1Wins;
+		alert("Player 1 wins!");
+	} else if(ship1.health <= 0) {
+		player2Wins++;
+		document.getElementById("score-2").innerHTML = player2Wins;
+		alert("Player 2 wins!");
+	} else {
+		return;
+	}
+
+	restartGame();
+	togglePause();
+}
+
 controls.setupControls(scene, ship1, ship2, togglePause, restartGame);
 
 function animate() {
@@ -90,6 +108,8 @@ function animate() {
 	ship1.update(camera);
 	ship2.update();
 	Bullet.updateBullets();
+
+	isGameFinished();
 
 	if(isAnimating) {
 		requestAnimationFrame( animate );

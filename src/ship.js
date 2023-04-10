@@ -1,7 +1,7 @@
 import * as THREE from 'three';
 import { Vector3 } from 'three';
 
-import { Curve, generateCurve } from './blackhole.js';
+import { Curve, generateCurve } from './awesomeRift.js';
 import config from './config.js';
 import { dist } from './utils.js';
 
@@ -9,7 +9,7 @@ import { dist } from './utils.js';
 export class Ship {
     static colliderSize = 0.1;
 
-    constructor(position, scene, healthBar, color=0x55deff) {
+    constructor(position, scene, healthBar, color=0x55deff, shipAsset) {
         this.initPos = position;
         this.pos = position;
         this.scene = scene;
@@ -28,10 +28,15 @@ export class Ship {
         this.fireRate = 0.5;
         this.fireRateCounter = 0;
 
-        const geometry = new THREE.ConeGeometry( 0.05, 0.15, 8 );
-        const material = new THREE.MeshBasicMaterial( { color: color } );
-        this.mesh = new THREE.Mesh( geometry, material );
+
+        // const geometry = new THREE.ConeGeometry( 0.05, 0.15, 8 );
+        // const material = new THREE.MeshBasicMaterial( { color: color } );
+        // this.mesh = new THREE.Mesh( geometry, material );
+        const texture = new THREE.TextureLoader().load(shipAsset);
+        const material = new THREE.SpriteMaterial({ map: texture, color: 0xffffff, transparent: true, alphaTest: 0.5});
+        this.mesh = new THREE.Sprite(material);
         this.scene.add(this.mesh);
+        this.mesh.scale.set(0.15, 0.2, 0.2);
 
         this.burnerParticles = [];
         this.frameCounter = 0;
@@ -79,7 +84,7 @@ export class Ship {
 
         // Update the ship's rotation
         this.dir.rotateAround(new THREE.Vector2(), -this.turnSpeed);
-        this.mesh.rotation.z = this.dir.angle() - 1.5708;
+        this.mesh.material.rotation = this.dir.angle() - 1.5708;
 
         // Reset the turn speed, if we are still turning, it will be set again in controls.js
         this.turnSpeed = 0;
@@ -330,8 +335,6 @@ export class Bullet {
 
     static destroyAllBullets() {
         this.bulletInstances.forEach((bullet) => {
-            bullet.sprite.texture.dispose();
-            bullet.sprite.material.dispose();
             this.scene.remove(bullet.sprite);
         })
         this.bulletInstances.clear();
