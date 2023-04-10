@@ -239,8 +239,9 @@ export class Bullet {
                 const startPos = bullet.position.clone();
                 const endPos = closestBullet.position.clone();
                 
+                const animationTime = ownerBullets.length == 1 ? 0 : 500;
                 const tween = new TWEEN.Tween(startPos)
-                    .to(endPos, 500)
+                    .to(endPos, animationTime)
                     .easing(TWEEN.Easing.Quadratic.InOut)
                     .onUpdate(() => {
                         bullet.position = startPos;
@@ -257,7 +258,6 @@ export class Bullet {
                         // Might be better to move this to the Curve initialization
                         const dist = closestBullet.position.distanceTo(enemy.pos);
                         const pullForce = 0.004 * Math.log(ownerBullets.length + 2) / Math.log(dist + 2);
-                        console.log(pullForce, Math.log(ownerBullets.length + 2), Math.log(dist + 2));
                         enemy.pullWithVector(new THREE.Vector2(Math.cos(angle), Math.sin(angle)).multiplyScalar(-pullForce));
                     }
 
