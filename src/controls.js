@@ -80,6 +80,7 @@ export function setupControls(scene, ship1, ship2, togglePause, restartGame) {
                 ship1.tearRiftWithBullets();
                 break;
             case ".":
+                console.log(ship2.pos);
                 ship2.tearRiftWithBullets();
                 break;
         }

@@ -5,6 +5,7 @@ import { Sun } from './sun.js';
 
 import { Curve } from './blackhole.js';
 import cnf from './config.js';
+import config from './config.js';
 
 
 const scene = new THREE.Scene();
@@ -26,6 +27,21 @@ if(cnf.DEBUG) {
 	pos1 = new THREE.Vector3(2, -2, 0);
 	pos2 = new THREE.Vector3(-2, 2, 0);
 }
+
+
+if(config.DEBUG) {
+	// create a new grid helper
+	const size = 10;
+	const divisions = 100;
+	const colorCenterLine = 0x444444;
+	const colorGrid = 0x22222;
+	const gridHelper = new THREE.GridHelper(size, divisions, colorCenterLine, colorGrid);
+	gridHelper.rotateX(Math.PI/2);
+	
+	// add the grid to the scene
+	scene.add(gridHelper);
+}
+
 
 
 const healthBar1 = document.getElementById("health-bar-1");

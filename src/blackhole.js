@@ -64,9 +64,7 @@ export class Curve {
         this.curveOpacity = curveOpacityStart;
 
         this.lines = [];
-        // this.lineCount = 1 + 2 * Math.floor(curveWidth / (2 * distBetweenParallelLines));
-        this.lineCount = 3;
-        // console.log(this.lineCount);
+        this.lineCount = 3 + 2 * Math.floor(this.curvePoints.length / 10);
         for (var i = 0; i < this.lineCount; i++) {
             this.lines.push(new Line(scene));
         }
@@ -85,6 +83,17 @@ export class Curve {
         tbremoved.forEach((curve) => {
             Curve.activeCurves.splice(Curve.activeCurves.indexOf(curve), 1);
         });
+    }
+
+    calculateDamageToShip(ship) {
+        const dist = this.distanceToPoint(ship.pos);
+        const dangerZone = this.lineCount * distBetweenParallelLines / 3; // the number 3 is by trial and error
+        const damageMultiplier = 1;
+
+        if(dist < dangerZone) {
+            return damageMultiplier * (dangerZone - dist) / dangerZone;
+        }
+        return 0;
     }
 
     distanceToPoint(point) {

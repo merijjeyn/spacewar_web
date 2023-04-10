@@ -1,7 +1,7 @@
 import * as THREE from 'three';
 import { Vector3 } from 'three';
 
-import { generateCurve } from './blackhole.js';
+import { Curve, generateCurve } from './blackhole.js';
 import config from './config.js';
 import { dist } from './utils.js';
 
@@ -84,6 +84,14 @@ export class Ship {
         // Reset the turn speed, if we are still turning, it will be set again in controls.js
         this.turnSpeed = 0;
         this.frameCounter++;
+
+        // Calculate damage from rifts
+        Curve.activeCurves.forEach((curve) => {
+            const dmg = curve.calculateDamageToShip(this);
+            if(dmg > 0) {
+                this.applyDamage(dmg);
+            }
+        });
 
         // Update the opacity of the particles and remove them if they are too transparent
         const tbremoved = [];
