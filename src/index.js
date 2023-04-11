@@ -23,11 +23,6 @@ if (navigator.userAgent.match(/Android/i)
 			window.location.href = "mobile.html";
 		 }
 
-// const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
-// if(isMobile) {
-// 	window.location.href = "mobile.html";
-// }
-
 const scene = new THREE.Scene();
 const camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight );
 
