@@ -13,10 +13,20 @@ const params = new Proxy(new URLSearchParams(window.location.search), {
 	get: (searchParams, prop) => searchParams.get(prop),
 });
 
-const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
-if(isMobile) {
-	window.location.href = "mobile.html";
-}
+if (navigator.userAgent.match(/Android/i)
+         || navigator.userAgent.match(/webOS/i)
+         || navigator.userAgent.match(/iPhone/i)
+         || navigator.userAgent.match(/iPad/i)
+         || navigator.userAgent.match(/iPod/i)
+         || navigator.userAgent.match(/BlackBerry/i)
+         || navigator.userAgent.match(/Windows Phone/i)) {
+			window.location.href = "mobile.html";
+		 }
+
+// const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+// if(isMobile) {
+// 	window.location.href = "mobile.html";
+// }
 
 const scene = new THREE.Scene();
 const camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight );
