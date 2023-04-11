@@ -13,6 +13,12 @@ const params = new Proxy(new URLSearchParams(window.location.search), {
 	get: (searchParams, prop) => searchParams.get(prop),
 });
 
+const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+if(isMobile) {
+	// redirect to mobile.html
+	window.location.href = "mobile.html";
+}
+
 if(!config.beta) {
 	const body = document.querySelector("body");
 	body.style.display = "none";

@@ -14,6 +14,7 @@ body {
     background-size: cover;
     font-family: 'Osaka', monospace;
     text-align: left;
+    background: black;
 }
 .overlay {
     position: fixed;
@@ -100,4 +101,15 @@ body {
     color: white;
     font-size: 2em;
     font-family: 'Atari';
+}
+
+.mobile-body {
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+h1 {
+    font-size: 1.2em !important;
 }
