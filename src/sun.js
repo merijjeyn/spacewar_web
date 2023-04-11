@@ -18,8 +18,8 @@ export class Sun {
         return this.mesh;
     }
 
-    update() {
-        this.renderer.update();
+    update(delta) {
+        this.renderer.update(delta);
 
         if(dist(this.ship1.pos, this.pos) < this.rad) {
             this.ship1.applyDamage(1); // it is this low because it happens every frame like burning
@@ -39,7 +39,7 @@ export class Sun {
 
         const dir = pos.negate().normalize();
         const skewed = new THREE.Vector3(dir.x, dir.y, 0).applyAxisAngle(new THREE.Vector3(0, 0, 1), Math.PI/4);
-        return new THREE.Vector2(skewed.x * 0.00002, skewed.y * 0.00002);
+        return new THREE.Vector2(skewed.x * 0.000017, skewed.y * 0.000017);
     }
 }
 
@@ -58,9 +58,9 @@ class SunRenderer {
         }
     }
 
-    update() {
+    update(delta) {
         this.lines.forEach(el => {
-            el.update();
+            el.update(delta);
         });
     }
 }
@@ -94,9 +94,10 @@ class Line {
     }
 
 
-    update() {
-        this.lineMesh.geometry.applyMatrix4(new THREE.Matrix4().makeTranslation(0, 0, -0.01));
-        this.lineMesh.geometry.applyMatrix4(new THREE.Matrix4().makeRotationZ(-0.001));
+    update(delta) {
+        const fps = isNaN(delta) ? 60 : 1000/delta;
+        this.lineMesh.translateZ(-0.015 * 60/fps);
+        this.lineMesh.rotateZ(-0.0015 * 60/fps);
         
         if(this.opacityInc) {
             this.lineMesh.material.opacity += Math.random() * 2 * this.opacityIncSpeed;

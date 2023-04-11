@@ -1,8 +1,10 @@
 import * as THREE from 'three';
+// import Stats from '../node_modules/stats.js/src/Stats.js';
+import Stats from 'https://cdnjs.cloudflare.com/ajax/libs/stats.js/17/Stats.js';
+
 import * as controls from './controls.js'
 import { Ship, Bullet } from './ship.js'
 import { Sun } from './sun.js';
-
 import { Curve } from './awesomeRift.js';
 import cnf from './config.js';
 import config from './config.js';
@@ -10,13 +12,9 @@ import config from './config.js';
 const params = new Proxy(new URLSearchParams(window.location.search), {
 	get: (searchParams, prop) => searchParams.get(prop),
 });
-// Get the value of "some_key" in eg "https://example.com/?some_key=some_value"
-let value = params.DEBUG;
 
-
-if(value != "true") {
+if(!config.beta) {
 	const body = document.querySelector("body");
-	// const menu = document.getElementById("menu");
 	body.style.display = "none";
 } else {
 	const scene = new THREE.Scene();
@@ -108,22 +106,48 @@ if(value != "true") {
 
 	controls.setupControls(scene, ship1, ship2, togglePause, restartGame);
 
-	function animate() {
+
+	const stats = new Stats();
+	if(config.beta) {
+		stats.showPanel(0);
+		document.body.appendChild(stats.dom);
+	}
+
+	let previousTs = 0;
+	const lastDeltas = [];
+
+	function animate(timestamp) {
+		if(config.beta) {
+			stats.begin();
+		}
+
+		const delta = timestamp - previousTs;
+		lastDeltas.push(delta);
+		if(lastDeltas.length > 10) {
+			lastDeltas.shift();
+		}
+		const avgDelta = lastDeltas.reduce((a, b) => a + b, 0) / lastDeltas.length;
+		previousTs = timestamp;
+
 		Curve.updateAllCurves();
 		TWEEN.update();
 
 		renderer.render( scene, camera );
 		
 		controls.updateControls(ship1, ship2);
-		sun.update();
-		ship1.update(camera);
-		ship2.update();
-		Bullet.updateBullets();
+		sun.update(avgDelta);
+		ship1.update(avgDelta, camera);
+		ship2.update(avgDelta, camera);
+		Bullet.updateBullets(avgDelta);
 
 		isGameFinished();
 
 		if(isAnimating) {
 			requestAnimationFrame( animate );
+		}
+
+		if(config.beta) {
+			stats.end();
 		}
 	}
 

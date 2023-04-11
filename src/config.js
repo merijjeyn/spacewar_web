@@ -6,6 +6,7 @@ const params = new Proxy(new URLSearchParams(window.location.search), {
 const config = {
     DEBUG: false,
     sunLineCount: params.sun_line_count || 3000,
+    beta: params.beta === "true" || false,
 };
 
 export default config;

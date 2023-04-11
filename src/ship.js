@@ -68,22 +68,24 @@ export class Ship {
         }
     }
 
-    update(camera) {
+    update(delta, camera) {
         // Update the ship's position
         this.vel.add(this.acc);
+        this.acc.set(0, 0);
         this.vel.clampLength(0, this.maxSpeed);
-        this.pos.add(this.vel);
-        this.confineWalls(camera);
+
+        const fps = isNaN(delta) ? 60 : 1000 / delta;
+        this.pos.add(this.vel.clone().multiplyScalar(60 / fps));
+        
         this.mesh.position.set(this.pos.x, this.pos.y, 0);
         this.fireRateCounter -= 1;
-
-        this.acc.set(0, 0);
+        this.confineWalls(camera);
 
         // Apply friction
-        this.vel.multiplyScalar(1 - this.friction);
+        this.vel.multiplyScalar(1 - this.friction * 60 / fps);
 
         // Update the ship's rotation
-        this.dir.rotateAround(new THREE.Vector2(), -this.turnSpeed);
+        this.dir.rotateAround(new THREE.Vector2(), -this.turnSpeed * 60 / fps);
         this.mesh.material.rotation = this.dir.angle() - 1.5708;
 
         // Reset the turn speed, if we are still turning, it will be set again in controls.js
@@ -94,7 +96,7 @@ export class Ship {
         Curve.activeCurves.forEach((curve) => {
             const dmg = curve.calculateDamageToShip(this);
             if(dmg > 0) {
-                this.applyDamage(dmg);
+                this.applyDamage(dmg * 60 / fps);
             }
         });
 
@@ -298,11 +300,13 @@ export class Bullet {
     }
             
 
-    static updateBullets() {
+    static updateBullets(delta) {
+        const fps = 1000 / delta;
+
         const tbremoved = [];
         this.bulletInstances.forEach((bullet) => {
             if(!bullet.isGettingPulled) {
-                bullet.position.addScaledVector(bullet.direction, bullet.speed);
+                bullet.position.addScaledVector(bullet.direction, bullet.speed * 60/fps);
             }
             bullet.sprite.position.set(bullet.position.x, bullet.position.y, 0)
             
@@ -311,11 +315,11 @@ export class Bullet {
             }
             
             if(dist(bullet.position, this.ship1.pos) < Ship.colliderSize) {
-                this.ship1.applyDamage(100);
+                this.ship1.applyDamage(50);
                 tbremoved.push(bullet);
             }
             if(dist(bullet.position, this.ship2.pos) < Ship.colliderSize) {
-                this.ship2.applyDamage(100);
+                this.ship2.applyDamage(50);
                 tbremoved.push(bullet);
             }
             

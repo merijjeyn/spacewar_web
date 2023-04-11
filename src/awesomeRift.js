@@ -176,11 +176,8 @@ export class Line {
         }
         
         const cmrc = new THREE.CatmullRomCurve3(positionArray);
-
         const pnts = cmrc.getPoints(50);
-
         const geometry = new THREE.BufferGeometry().setFromPoints(pnts);
-        // geometry.setAttribute('position', new THREE.BufferAttribute(positionArray, 3));
 
         // Create the new line material
         const material = new THREE.LineBasicMaterial({
