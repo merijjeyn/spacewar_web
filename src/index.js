@@ -15,150 +15,143 @@ const params = new Proxy(new URLSearchParams(window.location.search), {
 
 const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
 if(isMobile) {
-	// redirect to mobile.html
 	window.location.href = "mobile.html";
 }
 
-if(!config.beta) {
-	const body = document.querySelector("body");
-	body.style.display = "none";
+const scene = new THREE.Scene();
+const camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight );
+
+const renderer = new THREE.WebGLRenderer();
+renderer.setSize( window.innerWidth, window.innerHeight );
+document.body.appendChild( renderer.domElement );
+
+const ambientLight = new THREE.AmbientLight(0xffffff, 1);
+ambientLight.intensity = 0.5;
+scene.add(ambientLight);
+
+var pos1, pos2;
+if(cnf.DEBUG) {
+	pos1 = new THREE.Vector3(-2, 2, 0);
+	pos2 = new THREE.Vector3(0, 2, 0);
 } else {
-	const scene = new THREE.Scene();
-	const camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight );
-
-	const renderer = new THREE.WebGLRenderer();
-	renderer.setSize( window.innerWidth, window.innerHeight );
-	document.body.appendChild( renderer.domElement );
-
-	const ambientLight = new THREE.AmbientLight(0xffffff, 1);
-	ambientLight.intensity = 0.5;
-	scene.add(ambientLight);
-
-	var pos1, pos2;
-	if(cnf.DEBUG) {
-		pos1 = new THREE.Vector3(0, 2, 0);
-		pos2 = new THREE.Vector3(-2, 2, 0);
-	} else {
-		pos1 = new THREE.Vector3(2, -2, 0);
-		pos2 = new THREE.Vector3(-2, 2, 0);
-	}
-
-
-	if(config.DEBUG) {
-		// create a new grid helper
-		const size = 10;
-		const divisions = 10;
-		const colorCenterLine = 0x444444;
-		const colorGrid = 0x22222;
-		const gridHelper = new THREE.GridHelper(size, divisions, colorCenterLine, colorGrid);
-		gridHelper.rotateX(Math.PI/2);
-		
-		// add the grid to the scene
-		scene.add(gridHelper);
-	}
-
-
-	const healthBar1 = document.getElementById("health-bar-1");
-	const healthBar2 = document.getElementById("health-bar-2");
-
-	const ship1 = new Ship(pos1, scene, healthBar1, 0xfa5a5a, 'assets/ship1.png');
-	const ship2 = new Ship(pos2, scene, healthBar2, 0x940101, 'assets/ship2.png');
-	const sun = new Sun(ship1, ship2, scene, );
-
-	// pass the reference of the scene to the bullet class since we spawn and remove bullet sprites
-	Bullet.scene = scene;
-	Bullet.ship1 = ship1;
-	Bullet.ship2 = ship2;
-
-	camera.position.z = 5;
-
-	var isAnimating = false;
-	var isRestarted = false;
-
-	const restartGame = () => {
-		isRestarted = true;
-		ship1.restart();
-		ship2.restart();
-		Bullet.destroyAllBullets();
-		Curve.removeAllCurves();
-	}
-
-	const togglePause = () => {
-		isAnimating = !isAnimating;
-		const menu = document.getElementById("menu");
-		menu.style.display = isAnimating ? "none" : "flex";
-		if(isAnimating) { // if we are resuming the game
-			animate();
-		}
-	}
-
-	var player1Wins = 0;
-	var player2Wins = 0;
-	const isGameFinished = () => {
-		if(ship2.health <= 0) {
-			player1Wins++;
-			document.getElementById("score-1").innerHTML = player1Wins;
-			alert("Player 1 wins!");
-		} else if(ship1.health <= 0) {
-			player2Wins++;
-			document.getElementById("score-2").innerHTML = player2Wins;
-			alert("Player 2 wins!");
-		} else {
-			return;
-		}
-
-		restartGame();
-		togglePause();
-	}
-
-	controls.setupControls(scene, ship1, ship2, togglePause, restartGame);
-
-
-	const stats = new Stats();
-	if(config.beta) {
-		stats.showPanel(0);
-		document.body.appendChild(stats.dom);
-	}
-
-	let previousTs = 0;
-	const lastDeltas = [];
-
-	function animate(timestamp) {
-		if(config.beta) {
-			stats.begin();
-		}
-
-		const delta = timestamp - previousTs;
-		lastDeltas.push(delta);
-		if(lastDeltas.length > 10) {
-			lastDeltas.shift();
-		}
-		const avgDelta = lastDeltas.reduce((a, b) => a + b, 0) / lastDeltas.length;
-		previousTs = timestamp;
-
-		Curve.updateAllCurves();
-		TWEEN.update();
-
-		renderer.render( scene, camera );
-		
-		controls.updateControls(ship1, ship2);
-		sun.update(avgDelta);
-		ship1.update(avgDelta, camera);
-		ship2.update(avgDelta, camera);
-		Bullet.updateBullets(avgDelta);
-
-		isGameFinished();
-
-		if(isAnimating) {
-			requestAnimationFrame( animate );
-		}
-
-		if(config.beta) {
-			stats.end();
-		}
-	}
-
-	animate();
+	pos1 = new THREE.Vector3(-2, 2, 0);
+	pos2 = new THREE.Vector3(2, -2, 0);
 }
 
+
+if(config.DEBUG) {
+	// create a new grid helper
+	const size = 10;
+	const divisions = 10;
+	const colorCenterLine = 0x444444;
+	const colorGrid = 0x22222;
+	const gridHelper = new THREE.GridHelper(size, divisions, colorCenterLine, colorGrid);
+	gridHelper.rotateX(Math.PI/2);
+	
+	// add the grid to the scene
+	scene.add(gridHelper);
+}
+
+
+const healthBar1 = document.getElementById("health-bar-1");
+const healthBar2 = document.getElementById("health-bar-2");
+
+const ship1 = new Ship(pos1, scene, healthBar1, 0xfa5a5a, 'assets/ship1.png');
+const ship2 = new Ship(pos2, scene, healthBar2, 0x940101, 'assets/ship2.png');
+const sun = new Sun(ship1, ship2, scene, );
+
+// pass the reference of the scene to the bullet class since we spawn and remove bullet sprites
+Bullet.scene = scene;
+Bullet.ship1 = ship1;
+Bullet.ship2 = ship2;
+
+camera.position.z = 5;
+
+var isAnimating = false;
+var isRestarted = false;
+
+const restartGame = () => {
+	isRestarted = true;
+	ship1.restart();
+	ship2.restart();
+	Bullet.destroyAllBullets();
+	Curve.removeAllCurves();
+}
+
+const togglePause = () => {
+	isAnimating = !isAnimating;
+	const menu = document.getElementById("menu");
+	menu.style.display = isAnimating ? "none" : "flex";
+	if(isAnimating) { // if we are resuming the game
+		animate();
+	}
+}
+
+var player1Wins = 0;
+var player2Wins = 0;
+const isGameFinished = () => {
+	if(ship2.health <= 0) {
+		player1Wins++;
+		document.getElementById("score-1").innerHTML = player1Wins;
+		alert("Player 1 wins!");
+	} else if(ship1.health <= 0) {
+		player2Wins++;
+		document.getElementById("score-2").innerHTML = player2Wins;
+		alert("Player 2 wins!");
+	} else {
+		return;
+	}
+
+	restartGame();
+	togglePause();
+}
+
+controls.setupControls(scene, ship1, ship2, togglePause, restartGame);
+
+
+const stats = new Stats();
+if(config.beta) {
+	stats.showPanel(0);
+	document.body.appendChild(stats.dom);
+}
+
+let previousTs = 0;
+const lastDeltas = [];
+
+function animate(timestamp) {
+	if(config.beta) {
+		stats.begin();
+	}
+
+	const delta = timestamp - previousTs;
+	lastDeltas.push(delta);
+	if(lastDeltas.length > 10) {
+		lastDeltas.shift();
+	}
+	const avgDelta = lastDeltas.reduce((a, b) => a + b, 0) / lastDeltas.length;
+	previousTs = timestamp;
+
+	Curve.updateAllCurves();
+	TWEEN.update();
+
+	renderer.render( scene, camera );
+	
+	controls.updateControls(ship1, ship2);
+	sun.update(avgDelta);
+	ship1.update(avgDelta, camera);
+	ship2.update(avgDelta, camera);
+	Bullet.updateBullets(avgDelta);
+
+	isGameFinished();
+
+	if(isAnimating) {
+		requestAnimationFrame( animate );
+	}
+
+	if(config.beta) {
+		stats.end();
+	}
+}
+
+animate();
 

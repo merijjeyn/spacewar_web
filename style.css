@@ -59,11 +59,11 @@ body {
 }
 
 .left > .bar {
-    background-color: #ec3e3d;
+    background-color: #b51314;
 }
 
 .right > .bar {
-    background-color: #b51314;
+    background-color: #ec3e3d;
 }
 
 .bar {
