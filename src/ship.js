@@ -311,11 +311,11 @@ export class Bullet {
             }
             
             if(dist(bullet.position, this.ship1.pos) < Ship.colliderSize) {
-                this.ship1.applyDamage(50);
+                this.ship1.applyDamage(100);
                 tbremoved.push(bullet);
             }
             if(dist(bullet.position, this.ship2.pos) < Ship.colliderSize) {
-                this.ship2.applyDamage(50);
+                this.ship2.applyDamage(100);
                 tbremoved.push(bullet);
             }
             
