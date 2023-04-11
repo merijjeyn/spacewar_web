@@ -22,10 +22,10 @@ export class Sun {
         this.renderer.update(delta);
 
         if(dist(this.ship1.pos, this.pos) < this.rad) {
-            this.ship1.applyDamage(0.25); // it is this low because it happens every frame like burning
+            this.ship1.applyDamage(0.5); // it is this low because it happens every frame like burning
         }
         if(dist(this.ship2.pos, this.pos) < this.rad) {
-            this.ship2.applyDamage(0.25); // it is this low because it happens every frame like burning
+            this.ship2.applyDamage(0.5); // it is this low because it happens every frame like burning
         }
 
         this.ship1.pullWithVector(this.gravityFunc(this.ship1.pos.clone()));
