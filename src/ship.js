@@ -25,7 +25,7 @@ export class Ship {
         this.turnSpeed = 0;
         this.health = 100;
 
-        this.fireRate = 0.5;
+        this.fireRate = 0.8;
         this.fireRateCounter = 0;
 
         const texture = new THREE.TextureLoader().load(shipAsset);
@@ -74,7 +74,7 @@ export class Ship {
         this.pos.add(this.vel.clone().multiplyScalar(60 / fps));
         
         this.mesh.position.set(this.pos.x, this.pos.y, 0);
-        this.fireRateCounter -= 1;
+        this.fireRateCounter -= 1 * 60 / fps;
         this.confineWalls(camera);
 
         // Apply friction
