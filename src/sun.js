@@ -53,7 +53,7 @@ class SunRenderer {
     // A function that generates a bunch of lines that form a circle
     generateLines() {
         this.lines = [];
-        for(var i = 0; i < 3000; i++) {
+        for(var i = 0; i < cnf.sunLineCount; i++) {
             this.lines.push(new Line(this.scene));
         }
     }
