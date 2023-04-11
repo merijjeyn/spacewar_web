@@ -22,10 +22,10 @@ export class Sun {
         this.renderer.update(delta);
 
         if(dist(this.ship1.pos, this.pos) < this.rad) {
-            this.ship1.applyDamage(1); // it is this low because it happens every frame like burning
+            this.ship1.applyDamage(0.25); // it is this low because it happens every frame like burning
         }
         if(dist(this.ship2.pos, this.pos) < this.rad) {
-            this.ship2.applyDamage(1); // it is this low because it happens every frame like burning
+            this.ship2.applyDamage(0.25); // it is this low because it happens every frame like burning
         }
 
         this.ship1.pullWithVector(this.gravityFunc(this.ship1.pos.clone()));
@@ -39,7 +39,7 @@ export class Sun {
 
         const dir = pos.negate().normalize();
         const skewed = new THREE.Vector3(dir.x, dir.y, 0).applyAxisAngle(new THREE.Vector3(0, 0, 1), Math.PI/4);
-        return new THREE.Vector2(skewed.x * 0.000017, skewed.y * 0.000017);
+        return new THREE.Vector2(skewed.x * 0.000015, skewed.y * 0.000015);
     }
 }
 
