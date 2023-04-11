@@ -10,7 +10,7 @@ export class Ship {
     static colliderSize = 0.1;
 
     constructor(position, scene, healthBar, color=0x55deff, shipAsset) {
-        this.initPos = position;
+        this.initPos = position.clone();
         this.pos = position;
         this.scene = scene;
         this.healthBar = healthBar;
@@ -28,10 +28,6 @@ export class Ship {
         this.fireRate = 0.5;
         this.fireRateCounter = 0;
 
-
-        // const geometry = new THREE.ConeGeometry( 0.05, 0.15, 8 );
-        // const material = new THREE.MeshBasicMaterial( { color: color } );
-        // this.mesh = new THREE.Mesh( geometry, material );
         const texture = new THREE.TextureLoader().load(shipAsset);
         const material = new THREE.SpriteMaterial({ map: texture, color: 0xffffff, transparent: true, alphaTest: 0.5});
         this.mesh = new THREE.Sprite(material);

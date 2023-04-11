@@ -80,6 +80,7 @@ if(!config.beta) {
 		ship1.restart();
 		ship2.restart();
 		Bullet.destroyAllBullets();
+		Curve.removeAllCurves();
 	}
 
 	const togglePause = () => {
