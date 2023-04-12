@@ -16,16 +16,10 @@ const curveOpacityStart = 1;
 
 const randDispRange = 0.022;
 
-
-// const curvePointCount = 8;
-
-// const curveLength = 1.2;
-
 const heightDisplacement = 0.1;
 
 export function generateCurve(scene, center, angle, bulletCount) {
-    //Calculate a curveLenght based on the bulletCount
-    // const curveLength = bulletCount * 0.4;
+    //Calculate a curveLength based on the bulletCount
     const curveLength = Math.log(bulletCount + 2) / Math.log(2) * 0.6;
     const curvePointCount = Math.floor(curveLength / 0.2);
 
@@ -83,6 +77,14 @@ export class Curve {
         tbremoved.forEach((curve) => {
             Curve.activeCurves.splice(Curve.activeCurves.indexOf(curve), 1);
         });
+    }
+
+    static removeAllCurves() {
+        Curve.activeCurves.forEach((curve) => {
+            curve.destroyLineRenderers();
+        });
+
+        Curve.activeCurves = [];
     }
 
     calculateDamageToShip(ship) {
@@ -176,11 +178,8 @@ export class Line {
         }
         
         const cmrc = new THREE.CatmullRomCurve3(positionArray);
-
         const pnts = cmrc.getPoints(50);
-
         const geometry = new THREE.BufferGeometry().setFromPoints(pnts);
-        // geometry.setAttribute('position', new THREE.BufferAttribute(positionArray, 3));
 
         // Create the new line material
         const material = new THREE.LineBasicMaterial({

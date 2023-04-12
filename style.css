@@ -14,6 +14,7 @@ body {
     background-size: cover;
     font-family: 'Osaka', monospace;
     text-align: left;
+    background: black;
 }
 .overlay {
     position: fixed;
@@ -58,11 +59,11 @@ body {
 }
 
 .left > .bar {
-    background-color: #ec3e3d;
+    background-color: #b51314;
 }
 
 .right > .bar {
-    background-color: #b51314;
+    background-color: #ec3e3d;
 }
 
 .bar {
@@ -100,4 +101,11 @@ body {
     color: white;
     font-size: 2em;
     font-family: 'Atari';
+}
+
+.mobile-body {
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
 }

@@ -1,12 +1,27 @@
 import * as THREE from 'three';
+// import Stats from '../node_modules/stats.js/src/Stats.js';
+import Stats from 'https://cdnjs.cloudflare.com/ajax/libs/stats.js/17/Stats.js';
+
 import * as controls from './controls.js'
 import { Ship, Bullet } from './ship.js'
 import { Sun } from './sun.js';
-
 import { Curve } from './awesomeRift.js';
 import cnf from './config.js';
 import config from './config.js';
 
+const params = new Proxy(new URLSearchParams(window.location.search), {
+	get: (searchParams, prop) => searchParams.get(prop),
+});
+
+if (navigator.userAgent.match(/Android/i)
+         || navigator.userAgent.match(/webOS/i)
+         || navigator.userAgent.match(/iPhone/i)
+         || navigator.userAgent.match(/iPad/i)
+         || navigator.userAgent.match(/iPod/i)
+         || navigator.userAgent.match(/BlackBerry/i)
+         || navigator.userAgent.match(/Windows Phone/i)) {
+			window.location.href = "mobile.html";
+		 }
 
 const scene = new THREE.Scene();
 const camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight );
@@ -21,11 +36,11 @@ scene.add(ambientLight);
 
 var pos1, pos2;
 if(cnf.DEBUG) {
-	pos1 = new THREE.Vector3(0, 2, 0);
-	pos2 = new THREE.Vector3(-2, 2, 0);
+	pos1 = new THREE.Vector3(-2, 2, 0);
+	pos2 = new THREE.Vector3(0, 2, 0);
 } else {
-	pos1 = new THREE.Vector3(2, -2, 0);
-	pos2 = new THREE.Vector3(-2, 2, 0);
+	pos1 = new THREE.Vector3(-2, 2, 0);
+	pos2 = new THREE.Vector3(2, -2, 0);
 }
 
 
@@ -48,7 +63,7 @@ const healthBar2 = document.getElementById("health-bar-2");
 
 const ship1 = new Ship(pos1, scene, healthBar1, 0xfa5a5a, 'assets/ship1.png');
 const ship2 = new Ship(pos2, scene, healthBar2, 0x940101, 'assets/ship2.png');
-const sun = new Sun(ship1, ship2, scene);
+const sun = new Sun(ship1, ship2, scene, );
 
 // pass the reference of the scene to the bullet class since we spawn and remove bullet sprites
 Bullet.scene = scene;
@@ -65,6 +80,7 @@ const restartGame = () => {
 	ship1.restart();
 	ship2.restart();
 	Bullet.destroyAllBullets();
+	Curve.removeAllCurves();
 }
 
 const togglePause = () => {
@@ -97,25 +113,50 @@ const isGameFinished = () => {
 
 controls.setupControls(scene, ship1, ship2, togglePause, restartGame);
 
-function animate() {
+
+const stats = new Stats();
+if(config.beta) {
+	stats.showPanel(0);
+	document.body.appendChild(stats.dom);
+}
+
+let previousTs = 0;
+const lastDeltas = [];
+
+function animate(timestamp) {
+	if(config.beta) {
+		stats.begin();
+	}
+
+	const delta = timestamp - previousTs;
+	lastDeltas.push(delta);
+	if(lastDeltas.length > 10) {
+		lastDeltas.shift();
+	}
+	const avgDelta = lastDeltas.reduce((a, b) => a + b, 0) / lastDeltas.length;
+	previousTs = timestamp;
+
 	Curve.updateAllCurves();
 	TWEEN.update();
 
 	renderer.render( scene, camera );
 	
 	controls.updateControls(ship1, ship2);
-	sun.update();
-	ship1.update(camera);
-	ship2.update();
-	Bullet.updateBullets();
+	sun.update(avgDelta);
+	ship1.update(avgDelta, camera);
+	ship2.update(avgDelta, camera);
+	Bullet.updateBullets(avgDelta);
 
 	isGameFinished();
 
 	if(isAnimating) {
 		requestAnimationFrame( animate );
 	}
+
+	if(config.beta) {
+		stats.end();
+	}
 }
 
 animate();
-
 

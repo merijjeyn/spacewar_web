@@ -10,7 +10,7 @@ export class Ship {
     static colliderSize = 0.1;
 
     constructor(position, scene, healthBar, color=0x55deff, shipAsset) {
-        this.initPos = position;
+        this.initPos = position.clone();
         this.pos = position;
         this.scene = scene;
         this.healthBar = healthBar;
@@ -25,13 +25,9 @@ export class Ship {
         this.turnSpeed = 0;
         this.health = 100;
 
-        this.fireRate = 0.5;
+        this.fireRate = 0.8;
         this.fireRateCounter = 0;
 
-
-        // const geometry = new THREE.ConeGeometry( 0.05, 0.15, 8 );
-        // const material = new THREE.MeshBasicMaterial( { color: color } );
-        // this.mesh = new THREE.Mesh( geometry, material );
         const texture = new THREE.TextureLoader().load(shipAsset);
         const material = new THREE.SpriteMaterial({ map: texture, color: 0xffffff, transparent: true, alphaTest: 0.5});
         this.mesh = new THREE.Sprite(material);
@@ -68,22 +64,24 @@ export class Ship {
         }
     }
 
-    update(camera) {
+    update(delta, camera) {
         // Update the ship's position
         this.vel.add(this.acc);
-        this.vel.clampLength(0, this.maxSpeed);
-        this.pos.add(this.vel);
-        this.confineWalls(camera);
-        this.mesh.position.set(this.pos.x, this.pos.y, 0);
-        this.fireRateCounter -= 1;
-
         this.acc.set(0, 0);
+        this.vel.clampLength(0, this.maxSpeed);
+
+        const fps = isNaN(delta) ? 60 : 1000 / delta;
+        this.pos.add(this.vel.clone().multiplyScalar(60 / fps));
+        
+        this.mesh.position.set(this.pos.x, this.pos.y, 0);
+        this.fireRateCounter -= 1 * 60 / fps;
+        this.confineWalls(camera);
 
         // Apply friction
-        this.vel.multiplyScalar(1 - this.friction);
+        this.vel.multiplyScalar(1 - this.friction * 60 / fps);
 
         // Update the ship's rotation
-        this.dir.rotateAround(new THREE.Vector2(), -this.turnSpeed);
+        this.dir.rotateAround(new THREE.Vector2(), -this.turnSpeed * 60 / fps);
         this.mesh.material.rotation = this.dir.angle() - 1.5708;
 
         // Reset the turn speed, if we are still turning, it will be set again in controls.js
@@ -94,7 +92,7 @@ export class Ship {
         Curve.activeCurves.forEach((curve) => {
             const dmg = curve.calculateDamageToShip(this);
             if(dmg > 0) {
-                this.applyDamage(dmg);
+                this.applyDamage(dmg * 60 / fps);
             }
         });
 
@@ -298,11 +296,13 @@ export class Bullet {
     }
             
 
-    static updateBullets() {
+    static updateBullets(delta) {
+        const fps = 1000 / delta;
+
         const tbremoved = [];
         this.bulletInstances.forEach((bullet) => {
             if(!bullet.isGettingPulled) {
-                bullet.position.addScaledVector(bullet.direction, bullet.speed);
+                bullet.position.addScaledVector(bullet.direction, bullet.speed * 60/fps);
             }
             bullet.sprite.position.set(bullet.position.x, bullet.position.y, 0)
             
