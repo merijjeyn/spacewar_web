@@ -77,6 +77,7 @@ var isRestarted = false;
 
 const restartGame = () => {
 	isRestarted = true;
+	controls.resetControls();
 	ship1.restart();
 	ship2.restart();
 	Bullet.destroyAllBullets();
