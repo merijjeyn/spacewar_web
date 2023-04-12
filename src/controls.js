@@ -114,3 +114,7 @@ export function updateControls(ship1, ship2) {
     }
 
 }
+
+export function resetControls() {
+    Object.keys(keysDown).forEach(v => keysDown[v] = false)
+}
