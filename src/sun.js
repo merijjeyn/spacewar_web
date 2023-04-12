@@ -28,18 +28,18 @@ export class Sun {
             this.ship2.applyDamage(0.5); // it is this low because it happens every frame like burning
         }
 
-        this.ship1.pullWithVector(this.gravityFunc(this.ship1.pos.clone()));
-        this.ship2.pullWithVector(this.gravityFunc(this.ship2.pos.clone()));
+        this.ship1.pullWithVector(this.gravityFunc(delta, this.ship1.pos.clone()));
+        this.ship2.pullWithVector(this.gravityFunc(delta, this.ship2.pos.clone()));
     }
 
-    gravityFunc(pos) {
+    gravityFunc(delta, pos) {
         if(cnf.DEBUG) {
             return new THREE.Vector2(0, 0);
         }
 
         const dir = pos.negate().normalize();
         const skewed = new THREE.Vector3(dir.x, dir.y, 0).applyAxisAngle(new THREE.Vector3(0, 0, 1), Math.PI/4);
-        return new THREE.Vector2(skewed.x * 0.000015, skewed.y * 0.000015);
+        return new THREE.Vector2(skewed.x * 0.16 * delta, skewed.y * 0.16 * delta);
     }
 }
 
@@ -95,9 +95,8 @@ class Line {
 
 
     update(delta) {
-        const fps = isNaN(delta) ? 60 : 1000/delta;
-        this.lineMesh.translateZ(-0.015 * 60/fps);
-        this.lineMesh.rotateZ(-0.0015 * 60/fps);
+        this.lineMesh.translateZ(-2.5 * delta);
+        this.lineMesh.rotateZ(-0.25 * delta);
         
         if(this.opacityInc) {
             this.lineMesh.material.opacity += Math.random() * 2 * this.opacityIncSpeed;

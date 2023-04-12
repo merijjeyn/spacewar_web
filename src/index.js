@@ -128,12 +128,15 @@ function animate(timestamp) {
 		stats.begin();
 	}
 
-	const delta = timestamp - previousTs;
-	lastDeltas.push(delta);
+	// calculate delta
+	const curDelta = (timestamp - previousTs) / 1000;
+
+	lastDeltas.push(curDelta);
 	if(lastDeltas.length > 10) {
 		lastDeltas.shift();
 	}
 	const avgDelta = lastDeltas.reduce((a, b) => a + b, 0) / lastDeltas.length;
+	const delta = isNaN(avgDelta) ? 0.06 : avgDelta; // default 60 fps
 	previousTs = timestamp;
 
 	Curve.updateAllCurves();
@@ -142,10 +145,10 @@ function animate(timestamp) {
 	renderer.render( scene, camera );
 	
 	controls.updateControls(ship1, ship2);
-	sun.update(avgDelta);
-	ship1.update(avgDelta, camera);
-	ship2.update(avgDelta, camera);
-	Bullet.updateBullets(avgDelta);
+	sun.update(delta);
+	ship1.update(delta, camera);
+	ship2.update(delta, camera);
+	Bullet.updateBullets(delta);
 
 	isGameFinished();
 

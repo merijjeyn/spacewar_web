@@ -5,7 +5,7 @@ const params = new Proxy(new URLSearchParams(window.location.search), {
 // an object containing the configuration for the app
 const config = {
     DEBUG: false,
-    sunLineCount: params.sun_line_count || 3000,
+    sunLineCount: params.sun_line_count || 4000,
     beta: params.beta === "true" || false,
 };
 

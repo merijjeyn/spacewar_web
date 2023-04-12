@@ -18,14 +18,15 @@ export class Ship {
         this.dir = new THREE.Vector2(0, 1);
         this.vel = new THREE.Vector2();
         this.acc = new THREE.Vector2();
+        this.turnSpeed = 0; // radians per second
         
-        this.accConst = 0.0001;
-        this.maxSpeed = 0.05;
+        // Constants
+        this.accConst = 0.01; // unit^2 per second
+        this.maxSpeed = 1; // unit per second
         this.friction = 0.01;
-        this.turnSpeed = 0;
         this.health = 100;
-
-        this.fireRate = 0.8;
+        this.fireRate = 0.8; // second
+        
         this.fireRateCounter = 0;
 
         const texture = new THREE.TextureLoader().load(shipAsset);
@@ -66,22 +67,21 @@ export class Ship {
 
     update(delta, camera) {
         // Update the ship's position
-        this.vel.add(this.acc);
+        this.vel.add(this.acc); 
         this.acc.set(0, 0);
         this.vel.clampLength(0, this.maxSpeed);
 
-        const fps = isNaN(delta) ? 60 : 1000 / delta;
-        this.pos.add(this.vel.clone().multiplyScalar(60 / fps));
+        this.pos.add(this.vel.clone().multiplyScalar(delta));
         
         this.mesh.position.set(this.pos.x, this.pos.y, 0);
-        this.fireRateCounter -= 1 * 60 / fps;
+        this.fireRateCounter -= delta;
         this.confineWalls(camera);
 
         // Apply friction
-        this.vel.multiplyScalar(1 - this.friction * 60 / fps);
+        this.vel.multiplyScalar(1 - this.friction);
 
         // Update the ship's rotation
-        this.dir.rotateAround(new THREE.Vector2(), -this.turnSpeed * 60 / fps);
+        this.dir.rotateAround(new THREE.Vector2(), -this.turnSpeed * delta);
         this.mesh.material.rotation = this.dir.angle() - 1.5708;
 
         // Reset the turn speed, if we are still turning, it will be set again in controls.js
@@ -92,7 +92,7 @@ export class Ship {
         Curve.activeCurves.forEach((curve) => {
             const dmg = curve.calculateDamageToShip(this);
             if(dmg > 0) {
-                this.applyDamage(dmg * 60 / fps);
+                this.applyDamage(dmg * delta);
             }
         });
 
@@ -139,18 +139,18 @@ export class Ship {
     }
 
     turnLeft() {
-        this.turnSpeed = -0.03;
+        this.turnSpeed = -2 * Math.PI / 3;
     }
 
     turnRight() {
-        this.turnSpeed = 0.03;
+        this.turnSpeed = 2 * Math.PI / 3;
     }
 
     fire() {
         if (this.fireRateCounter > 0 && !config.DEBUG) {
             return;
         }
-        this.fireRateCounter = this.fireRate * 60;
+        this.fireRateCounter = this.fireRate;
 
         Bullet.spawnBullet(this, new THREE.Vector2(this.pos.x + this.dir.x/5, this.pos.y + this.dir.y/5), this.dir);
     }
@@ -193,7 +193,7 @@ export class Bullet {
         this.direction = direction;
         this.owner = owner;
         this.direction.normalize();
-        this.speed = 0.02;
+        this.speed = 1.2;
         this.isGettingPulled = false;
 
         const texture = new THREE.TextureLoader().load('assets/bullet.png');
@@ -297,12 +297,10 @@ export class Bullet {
             
 
     static updateBullets(delta) {
-        const fps = 1000 / delta;
-
         const tbremoved = [];
         this.bulletInstances.forEach((bullet) => {
             if(!bullet.isGettingPulled) {
-                bullet.position.addScaledVector(bullet.direction, bullet.speed * 60/fps);
+                bullet.position.addScaledVector(bullet.direction, bullet.speed * delta);
             }
             bullet.sprite.position.set(bullet.position.x, bullet.position.y, 0)
             
