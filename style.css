@@ -25,7 +25,7 @@ body {
     display: flex;
     align-items: center;
     justify-content: center;
-    z-index: 9999;
+    z-index: 10;
     padding: 0 20%;
 }
 .text {
@@ -108,4 +108,40 @@ body {
     display: flex;
     flex-direction: column;
     justify-content: center;
+}
+
+.constants-form {
+    /* position: fixed; */
+
+}
+
+.start-button {
+    position: fixed;
+    right: 20px;
+    top: calc(30vh - 36px);
+    height: 24px;
+}
+
+.config {
+    position: absolute;
+    z-index: 20;
+    right: 20px;
+    top: 30vh;
+    background-color: #20212398;
+    padding: 24px;
+}
+
+.form-bottom-layer {
+    padding: 8px;
+    display: flex;
+    justify-content: center;
+}
+
+.form-text {
+    color: rgb(211, 206, 191);
+    font-size: 0.5em;
+    font-family: 'Atari';
+    
+    position: relative;
+    bottom: 6px;
 }

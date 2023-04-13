@@ -70,5 +70,49 @@
 			<div class="bar" id="health-bar-2"></div>
 		</div>
 
+		<div class="config">
+			<div>
+				<button id="start-button" class="start-button" onclick="toggleForm()">Start</button>
+			</div>
+			
+			<div id="constants-form" class="constants-form" style="display: none;">
+				<form>
+					<label for="slider1" class="form-text">Slider 1:</label>
+					<input type="range" id="slider1" name="slider1" min="0" max="100" value="50"><br>
+			
+					<label for="slider2" class="form-text">Slider 2:</label>
+					<input type="range" id="slider2" name="slider2" min="0" max="100" value="50"><br>
+			
+					<label for="slider3" class="form-text">Slider 3:</label>
+					<input type="range" id="slider3" name="slider3" min="0" max="100" value="50"><br>
+				</form>
+
+				<div class="form-bottom-layer">
+					<button class="reset-button">Reset</button>
+				</div>
+			</div>
+		</div>
+
+		<script>
+			function showForm() {
+				document.getElementById("constants-form").style.display = "block";
+				document.getElementById("start-button").textContent = "Cancel";
+			}
+	
+			function hideForm() {
+				document.getElementById("constants-form").style.display = "none";
+				document.getElementById("start-button").textContent = "Open";
+			}
+
+			function toggleForm() {
+				var x = document.getElementById("constants-form");
+				if (x.style.display === "none") {
+					showForm();
+				} else {
+					hideForm();
+				}
+			}
+		</script>
+
 	</body>
 </html>

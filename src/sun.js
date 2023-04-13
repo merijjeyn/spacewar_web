@@ -1,5 +1,5 @@
 import * as THREE from 'three';
-import cnf from './config.js';
+import config from './config.js';
 
 
 export class Sun {
@@ -22,10 +22,10 @@ export class Sun {
         this.renderer.update(delta);
 
         if(dist(this.ship1.pos, this.pos) < this.rad) {
-            this.ship1.applyDamage(0.5); // it is this low because it happens every frame like burning
+            this.ship1.applyDamage(config.sunDamage); // it is this low because it happens every frame like burning
         }
         if(dist(this.ship2.pos, this.pos) < this.rad) {
-            this.ship2.applyDamage(0.5); // it is this low because it happens every frame like burning
+            this.ship2.applyDamage(config.sunDamage); // it is this low because it happens every frame like burning
         }
 
         this.ship1.pullWithVector(this.gravityFunc(delta, this.ship1.pos.clone()));
@@ -33,13 +33,13 @@ export class Sun {
     }
 
     gravityFunc(delta, pos) {
-        if(cnf.DEBUG) {
+        if(config.DEBUG) {
             return new THREE.Vector2(0, 0);
         }
 
         const dir = pos.negate().normalize();
         const skewed = new THREE.Vector3(dir.x, dir.y, 0).applyAxisAngle(new THREE.Vector3(0, 0, 1), Math.PI/4);
-        return new THREE.Vector2(skewed.x * 0.16 * delta, skewed.y * 0.16 * delta);
+        return new THREE.Vector2(skewed.x * config.sunPull * delta, skewed.y * config.sunPull * delta);
     }
 }
 
@@ -53,7 +53,7 @@ class SunRenderer {
     // A function that generates a bunch of lines that form a circle
     generateLines() {
         this.lines = [];
-        for(var i = 0; i < cnf.sunLineCount; i++) {
+        for(var i = 0; i < config.sunLineCount; i++) {
             this.lines.push(new Line(this.scene));
         }
     }

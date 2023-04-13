@@ -136,7 +136,7 @@ function animate(timestamp) {
 		lastDeltas.shift();
 	}
 	const avgDelta = lastDeltas.reduce((a, b) => a + b, 0) / lastDeltas.length;
-	const delta = isNaN(avgDelta) ? 0.06 : avgDelta; // default 60 fps
+	const delta = isNaN(avgDelta) ? config.defaultFps : avgDelta;
 	previousTs = timestamp;
 
 	Curve.updateAllCurves();
