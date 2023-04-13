@@ -110,26 +110,26 @@ body {
     justify-content: center;
 }
 
-.constants-form {
-    /* position: fixed; */
+.config {
+    position: absolute;
+    z-index: 20;
+    right: 20px;
+    top: 20vh;
+    background-color: #13131498;
+}
 
+.constants-form {
+    padding: 12px 22px;
+    border: 1px rgba(24, 23, 23, 0.748) solid;
+    border-radius: 1px;
 }
 
 .start-button {
     position: fixed;
     right: 20px;
-    top: calc(30vh - 36px);
-    height: 24px;
+    top: calc(20vh - 28px);
 }
 
-.config {
-    position: absolute;
-    z-index: 20;
-    right: 20px;
-    top: 30vh;
-    background-color: #20212398;
-    padding: 24px;
-}
 
 .form-bottom-layer {
     padding: 8px;
@@ -141,7 +141,159 @@ body {
     color: rgb(211, 206, 191);
     font-size: 0.5em;
     font-family: 'Atari';
-    
-    position: relative;
-    bottom: 6px;
+}
+
+/* Slider */
+
+.slider-container {
+    display: flex;
+    justify-content: space-evenly;
+    /* align-items: center; */
+    margin: 20px 0;
+}
+
+.slider {
+    -webkit-appearance: none;
+    width: 200px;
+    height: 12px;
+    box-shadow: inset 0 0 10px rgba(0,0,0,0.8);
+    background: #333;
+    outline: none;
+    opacity: 0.7;
+    -webkit-transition: .2s;
+    transition: opacity .2s;
+}
+
+.slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 8px;
+    height: 20px;
+    border-radius: 1px;
+    background: #ddd;
+    cursor: pointer;
+    -webkit-transition: .2s;
+    transition: .2s;
+}
+
+.slider::-moz-range-thumb {
+    width: 10px;
+    height: 20px;
+    background: #ddd;
+    cursor: pointer;
+    transition: .2s;
+}
+
+.slider::-ms-thumb {
+    width: 10px;
+    height: 20px;
+    background: #ddd;
+    cursor: pointer;
+    transition: .2s;
+}
+
+.slider:hover {
+    opacity: 1;
+}
+
+.slider:focus {
+    opacity: 1;
+}
+
+.slider-container label {
+    margin-right: 10px;
+    font-weight: bold;
+    color: #ddd;
+}
+
+.form-button {
+    background-color: #0b0b0c95;
+    border: none;
+    border: 1px #333 solid;
+    border-radius: 1px;
+    padding: 0 8px;
+    color: #ddd;
+    font-family: 'Atari';
+    font-size: 0.4em;
+    height: 24px;
+}
+
+/* The switch */
+.retro-switch {
+  position: relative;
+  display: inline-block;
+  width: 40px;
+  height: 20px;
+  border-radius: 1px;
+  background-color: #333;
+  box-shadow: inset 0 0 4px rgba(0,0,0,0.5);
+  opacity: 0.7;
+}
+
+.retro-switch input {
+  display: none;
+}
+
+.switch-slider {
+  position: absolute;
+  top: 2px;
+  bottom: 2px;
+  left: 2px;
+  width: 20px;
+  height: 16px;
+  background-color: #13131498;
+  border-radius: 1px;
+  transition: transform 0.1s ease-in-out;
+}
+
+.retro-switch input:checked + .switch-slider {
+  transform: translateX(16px);
+  background-color: #13131498;
+}
+
+.retro-switch input:focus + .switch-slider {
+  box-shadow: 0 0 1px #13131498;
+}
+
+.retro-switch input:checked + .switch-slider:before {
+  content: "1";
+  display: block;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 14px;
+  color: white;
+}
+
+.retro-switch input:not(:checked) + .switch-slider:before {
+  content: "0";
+  display: block;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 14px;
+  color: #bfbfbf;
+}
+
+.retro-switch.round {
+  border-radius: 0px;
+}
+
+.retro-switch.round .switch-slider {
+  border-radius: 0px;
+}
+
+.switch-input-container {
+    display: flex;
+    justify-content: center;
+    height: 22px;
+}
+
+.switch-text-container {
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    margin-right: 20px;
 }

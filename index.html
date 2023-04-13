@@ -70,38 +70,111 @@
 			<div class="bar" id="health-bar-2"></div>
 		</div>
 
-		<div class="config">
+		<div class="config" id="config">
 			<div>
-				<button id="start-button" class="start-button" onclick="toggleForm()">Start</button>
+				<button id="start-button" class="form-button start-button" onclick="toggleForm()">Config</button>
 			</div>
 			
 			<div id="constants-form" class="constants-form" style="display: none;">
-				<form>
-					<label for="slider1" class="form-text">Slider 1:</label>
-					<input type="range" id="slider1" name="slider1" min="0" max="100" value="50"><br>
+				<div class="slider-container">
+					<label for="slider1" class="form-text">ship acceleration</label>
+					<input type="range" id="slider1" name="slider1" min="0" max="100" value="50" class="slider">
+				</div>
+
+				<div class="slider-container">
+					<label for="slider1" class="form-text">ship max speed</label>
+					<input type="range" id="slider1" name="slider1" min="0" max="100" value="50" class="slider">
+				</div>
+
+				<div class="slider-container">
+					<label for="slider1" class="form-text">ship turn speed</label>
+					<input type="range" id="slider1" name="slider1" min="0" max="100" value="50" class="slider">
+				</div>
+
+				<div class="slider-container">
+					<label for="slider1" class="form-text">fire rate</label>
+					<input type="range" id="slider1" name="slider1" min="0" max="100" value="50" class="slider">
+				</div>
+
+				<div class="slider-container">
+					<label for="slider3" class="form-text">bullet speed</label>
+					<input type="range" id="slider3" name="slider3" min="0" max="100" value="50" class="slider">
+				</div>
 			
-					<label for="slider2" class="form-text">Slider 2:</label>
-					<input type="range" id="slider2" name="slider2" min="0" max="100" value="50"><br>
+				<div class="slider-container">
+					<label for="slider2" class="form-text">bullet damage</label>
+					<input type="range" id="slider2" name="slider2" min="0" max="100" value="50" class="slider">
+				</div>
 			
-					<label for="slider3" class="form-text">Slider 3:</label>
-					<input type="range" id="slider3" name="slider3" min="0" max="100" value="50"><br>
-				</form>
+				<div class="slider-container">
+					<label for="slider3" class="form-text">rift damage</label>
+					<input type="range" id="slider3" name="slider3" min="0" max="100" value="50" class="slider">
+				</div>
+
+				<div class="slider-container">
+					<label for="slider1" class="form-text">sun pull</label>
+					<input type="range" id="slider1" name="slider1" min="0" max="100" value="50" class="slider">
+				</div>
+
+				<div class="slider-container">
+					<label for="slider1" class="form-text">sun damage</label>
+					<input type="range" id="slider1" name="slider1" min="0" max="100" value="50" class="slider">
+				</div>
+
+
+				<div class="switch-input-container">
+					<div class="switch-text-container">
+						<label for="slider3" class="form-text">debug mode</label>
+					</div>
+					<div class="switch-container">
+						<label class="retro-switch">
+							<input type="checkbox">
+							<span class="switch-slider"></span>
+						</label>					  
+					</div>
+				</div>
+
+				<div class="switch-input-container">
+					<div class="switch-text-container">
+						<label for="slider3" class="form-text">show fps</label>
+					</div>
+					<div class="switch-container">
+						<label class="retro-switch">
+							<input type="checkbox">
+							<span class="switch-slider"></span>
+						</label>					  
+					</div>
+				</div>
+
+				<div class="switch-input-container">
+					<div class="switch-text-container">
+						<label for="slider3" class="form-text">beta mode</label>
+					</div>
+					<div class="switch-container">
+						<label class="retro-switch">
+							<input type="checkbox">
+							<span class="switch-slider"></span>
+						</label>					  
+					</div>
+				</div>
 
 				<div class="form-bottom-layer">
-					<button class="reset-button">Reset</button>
+					<button class="form-button reset-button">Reset</button>
 				</div>
+
+
 			</div>
 		</div>
 
 		<script>
 			function showForm() {
 				document.getElementById("constants-form").style.display = "block";
-				document.getElementById("start-button").textContent = "Cancel";
+				document.getElementById("start-button").textContent = "X";
 			}
 	
 			function hideForm() {
 				document.getElementById("constants-form").style.display = "none";
-				document.getElementById("start-button").textContent = "Open";
+				document.getElementById("start-button").textContent = "Config";
 			}
 
 			function toggleForm() {
