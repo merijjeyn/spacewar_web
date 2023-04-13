@@ -12,6 +12,14 @@ const config = {
     sunDamage: 0.5, // per second
     sunPull: 0.16, // units per second
 
+    shipAcc: 0.01, // unit^2 per second
+    shipMaxSpeed: 1, // units per second
+    fireRate: 0.8, // per second
+    shipTurnSpeed: 2.094, // radians per second
+
+    bulletSpeed: 1.2, // units per second
+    bulletDamage: 50,
+
     // internal
     defaultFps: 60,
 };

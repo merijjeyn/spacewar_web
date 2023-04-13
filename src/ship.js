@@ -21,11 +21,11 @@ export class Ship {
         this.turnSpeed = 0; // radians per second
         
         // Constants
-        this.accConst = 0.01; // unit^2 per second
-        this.maxSpeed = 1; // unit per second
+        this.accConst = config.shipAcc; // unit^2 per second
+        this.maxSpeed = config.shipMaxSpeed; // unit per second
         this.friction = 0.01;
         this.health = 100;
-        this.fireRate = 0.8; // second
+        this.fireRate = config.fireRate; // second
         
         this.fireRateCounter = 0;
 
@@ -139,11 +139,11 @@ export class Ship {
     }
 
     turnLeft() {
-        this.turnSpeed = -2 * Math.PI / 3;
+        this.turnSpeed = -config.shipTurnSpeed;
     }
 
     turnRight() {
-        this.turnSpeed = 2 * Math.PI / 3;
+        this.turnSpeed = config.shipTurnSpeed;
     }
 
     fire() {
@@ -193,7 +193,7 @@ export class Bullet {
         this.direction = direction;
         this.owner = owner;
         this.direction.normalize();
-        this.speed = 1.2;
+        this.speed = config.bulletSpeed;
         this.isGettingPulled = false;
 
         const texture = new THREE.TextureLoader().load('assets/bullet.png');
@@ -309,11 +309,11 @@ export class Bullet {
             }
             
             if(dist(bullet.position, this.ship1.pos) < Ship.colliderSize) {
-                this.ship1.applyDamage(50);
+                this.ship1.applyDamage(config.bulletDamage);
                 tbremoved.push(bullet);
             }
             if(dist(bullet.position, this.ship2.pos) < Ship.colliderSize) {
-                this.ship2.applyDamage(50);
+                this.ship2.applyDamage(config.bulletDamage);
                 tbremoved.push(bullet);
             }
             
