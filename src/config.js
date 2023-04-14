@@ -7,6 +7,7 @@ const config = {
     DEBUG: false,
     sunLineCount: params.sun_line_count || 4000,
     beta: params.beta === "true" || false,
+    showFps: false,
 
     // constants
     sunDamage: 0.5, // per second
@@ -19,6 +20,8 @@ const config = {
 
     bulletSpeed: 1.2, // units per second
     bulletDamage: 50,
+
+    riftDmg: 40,
 
     // internal
     defaultFps: 60,

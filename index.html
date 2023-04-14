@@ -30,6 +30,7 @@
         <script type="module" src="./src/ship.js"></script>
         <script type="module" src="./src/sun.js"></script>
 		<script type="module" src="./src/controls.js"></script>
+		<script type="module" src="./src/config.js"></script>
 		<script type="module" src="./src/awesomeRift.js"></script>
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/tween.js/19.0.0/tween.umd.js" integrity="sha512-wPy8llpALWKCO+dSOx2qSmBkgEAnKSUudSlrJwgHI85S7Y8eYu3/CFdW+rXbzs7gXC2fpbTPSJ/+yLyLtdInQw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/stats.js/17/Stats.js" integrity="sha512-PKGeQYRMLu1YBq2unBh8dSonpTsgd5MOJqggUn9S/MNywjMbo5F/PuBoYRdNYBjcOHrboHG2r2zlQQEfKikHSA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>		<div class="overlay" id="menu">
@@ -72,120 +73,112 @@
 
 		<div class="config" id="config">
 			<div>
-				<button id="start-button" class="form-button start-button" onclick="toggleForm()">Config</button>
+				<button id="start-button" class="form-button start-button">Config</button>
 			</div>
 			
 			<div id="constants-form" class="constants-form" style="display: none;">
-				<div class="slider-container">
-					<label for="slider1" class="form-text">ship acceleration</label>
-					<input type="range" id="slider1" name="slider1" min="0" max="100" value="50" class="slider">
-				</div>
+				<form id="constant-form-element">
 
-				<div class="slider-container">
-					<label for="slider1" class="form-text">ship max speed</label>
-					<input type="range" id="slider1" name="slider1" min="0" max="100" value="50" class="slider">
-				</div>
-
-				<div class="slider-container">
-					<label for="slider1" class="form-text">ship turn speed</label>
-					<input type="range" id="slider1" name="slider1" min="0" max="100" value="50" class="slider">
-				</div>
-
-				<div class="slider-container">
-					<label for="slider1" class="form-text">fire rate</label>
-					<input type="range" id="slider1" name="slider1" min="0" max="100" value="50" class="slider">
-				</div>
-
-				<div class="slider-container">
-					<label for="slider3" class="form-text">bullet speed</label>
-					<input type="range" id="slider3" name="slider3" min="0" max="100" value="50" class="slider">
-				</div>
-			
-				<div class="slider-container">
-					<label for="slider2" class="form-text">bullet damage</label>
-					<input type="range" id="slider2" name="slider2" min="0" max="100" value="50" class="slider">
-				</div>
-			
-				<div class="slider-container">
-					<label for="slider3" class="form-text">rift damage</label>
-					<input type="range" id="slider3" name="slider3" min="0" max="100" value="50" class="slider">
-				</div>
-
-				<div class="slider-container">
-					<label for="slider1" class="form-text">sun pull</label>
-					<input type="range" id="slider1" name="slider1" min="0" max="100" value="50" class="slider">
-				</div>
-
-				<div class="slider-container">
-					<label for="slider1" class="form-text">sun damage</label>
-					<input type="range" id="slider1" name="slider1" min="0" max="100" value="50" class="slider">
-				</div>
-
-
-				<div class="switch-input-container">
-					<div class="switch-text-container">
-						<label for="slider3" class="form-text">debug mode</label>
+					<div class="slider-container">
+						<label for="acc-slider" class="form-text">ship acceleration</label>
+						<input type="range" id="acc-slider" step="0.01" min="0" max="0.05" value="0.01" class="slider">
+						<span id="acc-slider-value" class="form-text"></span>
 					</div>
-					<div class="switch-container">
-						<label class="retro-switch">
-							<input type="checkbox">
-							<span class="switch-slider"></span>
-						</label>					  
-					</div>
-				</div>
 
-				<div class="switch-input-container">
-					<div class="switch-text-container">
-						<label for="slider3" class="form-text">show fps</label>
+					<div class="slider-container">
+						<label for="maxspeed-slider" class="form-text">ship max speed</label>
+						<input type="range" id="maxspeed-slider" min="0" max="4" value="1" class="slider">
+						<span id="maxspeed-slider-value" class="form-text"></span>
 					</div>
-					<div class="switch-container">
-						<label class="retro-switch">
-							<input type="checkbox">
-							<span class="switch-slider"></span>
-						</label>					  
+
+					<div class="slider-container">
+						<label for="turnspeed-slider" class="form-text">ship turn speed</label>
+						<input type="range" id="turnspeed-slider" step="1" min="0" max="8" value="2.094" class="slider">
+						<span id="turnspeed-slider-value" class="form-text"></span>
 					</div>
-				</div>
 
-				<div class="switch-input-container">
-					<div class="switch-text-container">
-						<label for="slider3" class="form-text">beta mode</label>
+					<div class="slider-container">
+						<label for="rate-slider" class="form-text">fire rate</label>
+						<input type="range" id="rate-slider" step="0.4" min="0" max="10" value="0.8" class="slider">
+						<span id="rate-slider-value" class="form-text"></span>
 					</div>
-					<div class="switch-container">
-						<label class="retro-switch">
-							<input type="checkbox">
-							<span class="switch-slider"></span>
-						</label>					  
+
+					<div class="slider-container">
+						<label for="bullspeed-slider" class="form-text">bullet speed</label>
+						<input type="range" id="bullspeed-slider" step="0.6" min="0" max="3" value="1.2" class="slider">
+						<span id="bullspeed-slider-value" class="form-text"></span>
 					</div>
-				</div>
+				
+					<div class="slider-container">
+						<label for="bulldmg-slider" class="form-text">bullet damage</label>
+						<input type="range" id="bulldmg-slider" min="0" max="100" value="50" class="slider">
+						<span id="bulldmg-slider-value" class="form-text"></span>
+					</div>
+				
+					<div class="slider-container">
+						<label for="riftdmg-slider" class="form-text">rift damage</label>
+						<input type="range" id="riftdmg-slider" min="0" max="100" value="40" class="slider">
+						<span id="riftdmg-slider-value" class="form-text"></span>
+					</div>
 
-				<div class="form-bottom-layer">
-					<button class="form-button reset-button">Reset</button>
-				</div>
+					<div class="slider-container">
+						<label for="pull-slider" class="form-text">sun pull</label>
+						<input type="range" id="pull-slider" step="0.02" min="0" max="0.5" value="0.16" class="slider">
+						<span id="pull-slider-value" class="form-text"></span>
+					</div>
+
+					<div class="slider-container">
+						<label for="sundmg-slider" class="form-text">sun damage</label>
+						<input type="range" id="sundmg-slider" step="0.5" min="0" max="3" value="0.5" class="slider">
+						<span id="sundmg-slider-value" class="form-text"></span>
+					</div>
 
 
+					<div class="switch-input-container">
+						<div class="switch-text-container">
+							<label for="debug-switch" class="form-text">debug mode</label>
+						</div>
+						<div class="switch-container">
+							<label class="retro-switch">
+								<input type="checkbox" id="debug-switch">
+								<span class="switch-slider"></span>
+							</label>					  
+						</div>
+					</div>
+
+					<div class="switch-input-container">
+						<div class="switch-text-container">
+							<label for="fps-switch" class="form-text">show fps</label>
+						</div>
+						<div class="switch-container">
+							<label class="retro-switch">
+								<input type="checkbox" id="fps-switch">
+								<span class="switch-slider"></span>
+							</label>					  
+						</div>
+					</div>
+
+					<div class="switch-input-container">
+						<div class="switch-text-container">
+							<label for="beta-switch" class="form-text">beta mode</label>
+						</div>
+						<div class="switch-container">
+							<label class="retro-switch">
+								<input type="checkbox" id="beta-switch">
+								<span class="switch-slider"></span>
+							</label>					  
+						</div>
+					</div>
+
+					<div class="form-bottom-layer">
+						<button id="reset-button" class="form-button reset-button">Reset</button>
+					</div>
+				</form>
+				<script>
+					
+				</script>
 			</div>
 		</div>
-
-		<script>
-			function showForm() {
-				document.getElementById("constants-form").style.display = "block";
-				document.getElementById("start-button").textContent = "X";
-			}
-	
-			function hideForm() {
-				document.getElementById("constants-form").style.display = "none";
-				document.getElementById("start-button").textContent = "Config";
-			}
-
-			function toggleForm() {
-				var x = document.getElementById("constants-form");
-				if (x.style.display === "none") {
-					showForm();
-				} else {
-					hideForm();
-				}
-			}
-		</script>
-
+		<script type="module" src="./src/configHandler.js"></script>
 	</body>
 </html>

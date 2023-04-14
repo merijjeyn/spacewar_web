@@ -5,6 +5,7 @@ and for a slightly different purpose. Take it with a grain of salt.
 
 import * as THREE from "three";
 import { Queue, degToRad, curveOpacityDecreaseFunc } from "./utils.js";
+import config from "./config.js";
 
 const activeLineCount = 50;
 
@@ -90,7 +91,7 @@ export class Curve {
     calculateDamageToShip(ship) {
         const dist = this.distanceToPoint(ship.pos);
         const dangerZone = this.lineCount * distBetweenParallelLines / 3; // the number 3 is by trial and error
-        const damageMultiplier = 40; // dmg per second
+        const damageMultiplier = config.riftDmg; // dmg per second
 
         if(dist < dangerZone) {
             return damageMultiplier * (dangerZone - dist) / dangerZone;
